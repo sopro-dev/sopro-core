@@ -21,6 +21,6 @@ type AudioFileOut struct {
 type AudioFileGeneral struct {
 	File   *os.File    // the audio file
 	Format string      // the audio file format (e.g. "mp3", "ogg", "wav", etc.)
-	Length float64     // the length of the audio in seconds
+	Length int         // the length of the audio in seconds
 	Config interface{} // the specific configuration options for the audio file format
 }
