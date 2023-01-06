@@ -20,6 +20,7 @@ func bitTranscoder(b []byte, transcoder *TranscoderOneToOne) func() ([]byte, err
 				case transcoder.SourceConfigs.Encoding == encoding.SPACE_ULAW && transcoder.TargetConfigs.Encoding == encoding.SPACE_LINEAR:
 					// ulaw -> linear
 					// return g711.DecodeUlaw(b), nil
+					// transcoder.Println("[debug transcoding] ulaw -> linear (8 bit depth)")
 					return table_ulaw_8_linear(
 						b,
 						transcoder.SourceConfigs.Encoding,
@@ -29,6 +30,8 @@ func bitTranscoder(b []byte, transcoder *TranscoderOneToOne) func() ([]byte, err
 
 			}
 		}
+
+		transcoder.Println("[error transcoding] method not found")
 		return []byte{}, fmt.Errorf(
 			"[error transcoding]%v[source]%v[target]%v[bitDepth]%v",
 			"method not found",

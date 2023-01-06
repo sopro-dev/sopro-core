@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math"
 	"os"
 	"strings"
 	"sync"
@@ -12,7 +13,20 @@ import (
 	"github.com/guptarohit/asciigraph"
 	"github.com/pablodz/transcoder/transcoder/audioconfig"
 	"github.com/pablodz/transcoder/transcoder/cpuarch"
+	"golang.org/x/term"
 )
+
+var WIDTH_TERMINAL = 80
+var HEIGHT_TERMINAL = 10
+
+func init() {
+
+	err := error(nil)
+	WIDTH_TERMINAL, HEIGHT_TERMINAL, err = term.GetSize(0)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
 
 // TODO: split functions for different sizes of files
 // Transcode an ulaw file to a wav file (large files supported)
@@ -22,10 +36,16 @@ func Mulaw2Wav(in *AudioFileIn, out *AudioFileOut, transcoder *TranscoderOneToOn
 
 	// read all the file
 	if transcoder.Verbose {
+		transcoder.Println("[WARNING] Reading the whole file into memory. This may take a while...")
 		f := in.Data.(*os.File)
-		bytes, err := io.ReadAll(f)
+		// make an independent copy of the file
+		f2, err := os.Open(f.Name())
 		if err != nil {
-			panic(err)
+			log.Fatal(err)
+		}
+		bytes, err := io.ReadAll(f2)
+		if err != nil {
+			log.Fatal(err)
 		}
 
 		stringSlice := make([]float64, len(bytes))
@@ -34,11 +54,11 @@ func Mulaw2Wav(in *AudioFileIn, out *AudioFileOut, transcoder *TranscoderOneToOn
 		}
 		fmt.Println(asciigraph.Plot(
 			stringSlice,
-			asciigraph.Height(10),
-			asciigraph.Width(80),
+			asciigraph.Height(HEIGHT_TERMINAL/3),
+			asciigraph.Width(WIDTH_TERMINAL-10),
 			asciigraph.Caption("Graph for input ulaw file"),
 		))
-		defer f.Close()
+		defer f2.Close()
 	}
 
 	// Get the WAV file configuration
@@ -103,41 +123,100 @@ func Mulaw2Wav(in *AudioFileIn, out *AudioFileOut, transcoder *TranscoderOneToOn
 	}
 	transcoder.Println("Wrote", out.Length, "bytes to output file")
 
+	if transcoder.Verbose {
+		transcoder.Println("[WARNING] Reading the whole file into memory. This may take a while...")
+		f := in.Data.(*os.File)
+		// make an independent copy of the file
+		f2, err := os.Open(f.Name())
+		if err != nil {
+			log.Fatal(err)
+		}
+		bytes, err := io.ReadAll(f2)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		stringSlice1 := make([]float64, len(bytes))
+		for i, val := range bytes {
+			stringSlice1[i] = float64(val)
+		}
+		fmt.Println(asciigraph.Plot(
+			stringSlice1,
+			asciigraph.Height(HEIGHT_TERMINAL/3),
+			asciigraph.Width(WIDTH_TERMINAL-10),
+			asciigraph.Caption("Graph for input ulaw file"),
+		))
+		defer f2.Close()
+		// graph of the output file
+		fOut := out.Data.(*os.File)
+		// make an independent copy of the file
+		f3, err := os.Open(fOut.Name())
+		if err != nil {
+			log.Fatal(err)
+		}
+		bytes, err = io.ReadAll(f3)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		stringSlice2 := make([]float64, len(bytes))
+		for i, val := range bytes {
+			stringSlice2[i] = float64(val)
+		}
+
+		stringSlice3 := make([]float64, len(bytes))
+		for i := range bytes {
+			stringSlice3[i] = float64(math.MaxInt8)
+		}
+		fmt.Println(asciigraph.PlotMany(
+			[][]float64{stringSlice3, stringSlice1, stringSlice2},
+			asciigraph.Height(HEIGHT_TERMINAL/3),
+			asciigraph.Width(WIDTH_TERMINAL-10),
+			asciigraph.Caption("Graph for output wav file"),
+			asciigraph.SeriesColors(
+				asciigraph.Blue,
+				asciigraph.Red,
+				asciigraph.Green,
+			),
+		))
+		defer f2.Close()
+	}
+
 	// Update the file size and data size fields
-	fileSize := []byte{
-		byte((out.Length - 8) & 0xff),
-		byte((out.Length - 8) >> 8 & 0xff),
-		byte((out.Length - 8) >> 16 & 0xff),
-		byte((out.Length - 8) >> 24 & 0xff),
-	}
-	r, err := out.File.Seek(4, io.SeekStart)
-	if err != nil {
-		return fmt.Errorf("[1]error seeking file: %v", err)
-	}
-	transcoder.Println("Seeked to:", r)
+	// fileSize := []byte{
+	// 	byte((out.Length - 8) & 0xff),
+	// 	byte((out.Length - 8) >> 8 & 0xff),
+	// 	byte((out.Length - 8) >> 16 & 0xff),
+	// 	byte((out.Length - 8) >> 24 & 0xff),
+	// }
+	// r, err := out.File.Seek(4, io.SeekStart)
+	// if err != nil {
+	// 	return fmt.Errorf("[1]error seeking file: %v", err)
+	// }
+	// transcoder.Println("Seeked to:", r)
 
-	n, err := out.File.Write(fileSize)
-	if err != nil {
-		return fmt.Errorf("error writing file size: %v", err)
-	}
-	transcoder.Println("File size:", fmt.Sprintf("% 02x", fileSize), "bytes written:", n)
+	// n, err := out.File.Write(fileSize)
+	// if err != nil {
+	// 	return fmt.Errorf("error writing file size: %v", err)
+	// }
+	// transcoder.Println("File size:", fmt.Sprintf("% 02x", fileSize), "bytes written:", n)
 
-	dataSize := []byte{
-		byte((out.Length - 44) & 0xff),
-		byte((out.Length - 44) >> 8 & 0xff),
-		byte((out.Length - 44) >> 16 & 0xff),
-		byte((out.Length - 44) >> 24 & 0xff),
-	}
-	r, err = out.File.Seek(40, io.SeekStart)
-	if err != nil {
-		return fmt.Errorf("[2]error seeking file: %v", err)
-	}
-	transcoder.Println("Seeked to:", r)
-	n, err = out.File.Write(dataSize)
-	if err != nil {
-		return fmt.Errorf("error writing data size: %v", err)
-	}
-	transcoder.Println("Data size:", fmt.Sprintf("% 02x", dataSize), "bytes written:", n)
+	// dataSize := []byte{
+	// 	byte((out.Length - 44) & 0xff),
+	// 	byte((out.Length - 44) >> 8 & 0xff),
+	// 	byte((out.Length - 44) >> 16 & 0xff),
+	// 	byte((out.Length - 44) >> 24 & 0xff),
+	// }
+	// r, err = out.File.Seek(40, io.SeekStart)
+	// if err != nil {
+	// 	return fmt.Errorf("[2]error seeking file: %v", err)
+	// }
+	// transcoder.Println("Seeked to:", r)
+	// n, err = out.File.Write(dataSize)
+	// if err != nil {
+	// 	return fmt.Errorf("error writing data size: %v", err)
+	// }
+	// transcoder.Println("Data size:", fmt.Sprintf("% 02x", dataSize), "bytes written:", n)
 
 	return nil
 
@@ -153,7 +232,7 @@ func TranscodeBytes(in *AudioFileIn, out *AudioFileOut, transcoder *TranscoderOn
 		transcoder.TargetConfigs.Endianness = cpuarch.LITTLE_ENDIAN
 	}
 
-	buf := make([]byte, 10) // read and write in chunks of 1024 bytes
+	buf := make([]byte, 1024) // read and write in chunks of 1024 bytes
 	n := 0
 	err := error(nil)
 
@@ -198,7 +277,13 @@ func TranscodeBytes(in *AudioFileIn, out *AudioFileOut, transcoder *TranscoderOn
 
 			doOnceTD.Do(func() {
 				transcoder.Println(strings.Repeat("-", 80))
-				transcoder.Println("OLD:", fmt.Sprintf("% 02x", buf[:n]), "NEW:", fmt.Sprintf("% 02x", buf2[:n]), "LEN:", n)
+				transcoder.Println("Transcoding bytes")
+				onlyNFirst := 10
+				transcoder.Println(
+					"|OLD|", fmt.Sprintf("% 02x", buf[:onlyNFirst]),
+					"|NEW|", fmt.Sprintf("% 02x", buf2[:onlyNFirst]),
+					"|LEN|", onlyNFirst,
+				)
 				transcoder.Println(strings.Repeat("-", 80))
 			})
 
