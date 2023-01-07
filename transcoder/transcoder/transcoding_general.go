@@ -5,11 +5,12 @@ import (
 
 	"github.com/pablodz/transcoder/transcoder/encoding"
 	"github.com/pablodz/transcoder/transcoder/method"
+	"github.com/zaf/g711"
 )
 
 // Function that find the ideal method for transcoding your samples
-func bitTranscoder(b []byte, transcoder *TranscoderOneToOne) func() ([]byte, error) {
-	return func() ([]byte, error) {
+func bitTranscoder(b []byte, transcoder *TranscoderOneToOne) func([]byte, *TranscoderOneToOne) ([]byte, error) {
+	return func([]byte, *TranscoderOneToOne) ([]byte, error) {
 		switch transcoder.Method {
 		case method.BIT_TABLE:
 			// Bit table: use a slice to store the values
@@ -19,13 +20,13 @@ func bitTranscoder(b []byte, transcoder *TranscoderOneToOne) func() ([]byte, err
 				switch {
 				case transcoder.SourceConfigs.Encoding == encoding.SPACE_ULAW && transcoder.TargetConfigs.Encoding == encoding.SPACE_LINEAR:
 					// ulaw -> linear
-					// return g711.DecodeUlaw(b), nil
+					return g711.DecodeUlaw(b), nil
 					// transcoder.Println("[debug transcoding] ulaw -> linear (8 bit depth)")
-					return table_ulaw_8_linear(
-						b,
-						transcoder.SourceConfigs.Encoding,
-						transcoder.TargetConfigs.Encoding,
-					), nil
+					// return table_ulaw_8_linear(
+					// 	b,
+					// 	transcoder.SourceConfigs.Encoding,
+					// 	transcoder.TargetConfigs.Encoding,
+					// ), nil
 				}
 
 			}

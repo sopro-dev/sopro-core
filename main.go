@@ -46,7 +46,7 @@ func main() {
 			AudioFileGeneral: transcoder.AudioFileGeneral{
 				Format: fileformat.AUDIO_WAV,
 				Config: audioconfig.WavConfig{
-					BitDepth:   8,
+					BitDepth:   16,
 					Channels:   1,
 					Encoding:   encoding.SPACE_LINEAR,
 					SampleRate: 8000,
