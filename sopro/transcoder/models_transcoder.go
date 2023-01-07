@@ -1,6 +1,6 @@
 package transcoder
 
-type TranscoderOneToOne struct {
+type Transcoder struct {
 	Method          int                   // the method of transcoding (e.g. 1, 2, 3, etc.)
 	AdvancedConfigs interface{}           // the specific configuration options for the transcoding method
 	SourceConfigs   TranscoderAudioConfig // the source configuration

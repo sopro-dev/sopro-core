@@ -2,20 +2,44 @@ package transcoder
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 
+	"github.com/guptarohit/asciigraph"
 	"github.com/olekukonko/tablewriter"
 )
 
-func (t *TranscoderOneToOne) Println(items ...any) {
+func (t *Transcoder) Println(items ...any) {
 	if t.Verbose {
-		log.Println(items...)
+		fmt.Println(items...)
 	}
 }
 
-func printTableInt8(items []int8, numPerRow int) {
+func printGraphInt16(items []int16) {
+	// Convert the slice of int16 values to a slice of strings
+
+	stringSlice := make([]float64, len(items))
+	for i, val := range items {
+		stringSlice[i] = float64(val)
+	}
+	fmt.Println(asciigraph.Plot(
+		stringSlice,
+		asciigraph.Height(10),
+		asciigraph.Width(80),
+		asciigraph.Caption("Graph for ulaw to linear16"),
+	))
+	minY, maxY := LimitsSliceFloat64(stringSlice)
+	fmt.Println("MinY:   ", minY)
+	fmt.Println("MaxY:   ", maxY)
+	fmt.Println("DeltaY: ", (maxY - minY))
+	fmt.Println("MinX:   ", 0)
+	fmt.Println("MaxX:   ", len(stringSlice))
+	fmt.Println("DeltaX: ", (len(stringSlice) - 0))
+	fmt.Println()
+
+}
+
+func printTableInt16(items []int16, numPerRow int) {
 	// Convert the slice of int16 values to a slice of strings
 	stringSlice := make([]string, len(items))
 	for i, val := range items {

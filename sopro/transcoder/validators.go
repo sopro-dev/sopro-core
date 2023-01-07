@@ -9,3 +9,15 @@ package transcoder
 // ex. validate encoding
 // ex. validate file size
 // validate not 1-1 transcoding inputs as 8k output as 16k
+
+func ValidateInput(input *AudioFileIn) error {
+	return nil
+}
+
+func ValidateOutput(output *AudioFileOut) error {
+	return nil
+}
+
+func ValidateTranscoder(transcoder *Transcoder) error {
+	return nil
+}

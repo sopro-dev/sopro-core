@@ -3,12 +3,12 @@ package main
 import (
 	"os"
 
-	"github.com/pablodz/transcoder/transcoder/audioconfig"
-	"github.com/pablodz/transcoder/transcoder/cpuarch"
-	"github.com/pablodz/transcoder/transcoder/encoding"
-	"github.com/pablodz/transcoder/transcoder/fileformat"
-	"github.com/pablodz/transcoder/transcoder/method"
-	"github.com/pablodz/transcoder/transcoder/transcoder"
+	"github.com/pablodz/sopro/sopro/audioconfig"
+	"github.com/pablodz/sopro/sopro/cpuarch"
+	"github.com/pablodz/sopro/sopro/encoding"
+	"github.com/pablodz/sopro/sopro/fileformat"
+	"github.com/pablodz/sopro/sopro/method"
+	"github.com/pablodz/sopro/sopro/transcoder"
 )
 
 func main() {
@@ -27,8 +27,20 @@ func main() {
 	}
 	defer out.Close()
 
+	// create a transcoder
+	t := &transcoder.Transcoder{
+		Method: method.BIT_TABLE,
+		SourceConfigs: transcoder.TranscoderAudioConfig{
+			Endianness: cpuarch.LITTLE_ENDIAN,
+		},
+		TargetConfigs: transcoder.TranscoderAudioConfig{
+			Endianness: cpuarch.LITTLE_ENDIAN,
+		},
+		Verbose: true,
+	}
+
 	// Transcode the file
-	err = transcoder.Mulaw2Wav(
+	err = t.Mulaw2Wav(
 		&transcoder.AudioFileIn{
 			Data: in,
 			AudioFileGeneral: transcoder.AudioFileGeneral{
@@ -36,7 +48,7 @@ func main() {
 				Config: audioconfig.MulawConfig{
 					BitDepth:   8,
 					Channels:   1,
-					Encoding:   encoding.SPACE_ULAW,
+					Encoding:   encoding.SPACE_LOGARITHMIC, // ulaw is logarithmic
 					SampleRate: 8000,
 				},
 			},
@@ -53,20 +65,8 @@ func main() {
 				},
 			},
 		},
-		&transcoder.TranscoderOneToOne{
-			Method: method.BIT_TABLE,
-			SourceConfigs: transcoder.TranscoderAudioConfig{
-				Encoding:   encoding.SPACE_ULAW,
-				Endianness: cpuarch.LITTLE_ENDIAN,
-			},
-			TargetConfigs: transcoder.TranscoderAudioConfig{
-				Encoding:   encoding.SPACE_LINEAR,
-				Endianness: cpuarch.LITTLE_ENDIAN,
-			},
-			BitDepth: transcoder.BIT_8,
-			Verbose:  true,
-		},
 	)
+
 	if err != nil {
 		panic(err)
 	}
