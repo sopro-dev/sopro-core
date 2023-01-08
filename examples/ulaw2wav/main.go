@@ -36,7 +36,8 @@ func main() {
 		TargetConfigs: transcoder.TranscoderAudioConfig{
 			Endianness: cpuarch.LITTLE_ENDIAN,
 		},
-		Verbose: true,
+		SizeBufferToProcess: 1024,
+		Verbose:             true,
 	}
 
 	// Transcode the file

@@ -20,7 +20,7 @@ func TranscodeBytes(in *AudioFileIn, out *AudioFileOut, transcoder *Transcoder) 
 	if equalEncod {
 
 		log.Println("Same encodings - no transcoding needed")
-		bitsProcessed, err = equalSpaceEncoding(in, out)
+		bitsProcessed, err = equalSpaceEncoding(in, out, transcoder)
 		if err != nil {
 			return err
 		}
@@ -40,10 +40,14 @@ func TranscodeBytes(in *AudioFileIn, out *AudioFileOut, transcoder *Transcoder) 
 	return nil
 }
 
-func equalSpaceEncoding(in *AudioFileIn, out *AudioFileOut) (int, error) {
-	nTotal, err := 0, error(nil)
-	buf := make([]byte, 32) // read and write in chunks of 1024 byte
-	for err == nil {
+func equalSpaceEncoding(in *AudioFileIn, out *AudioFileOut, transcoder *Transcoder) (int, error) {
+	sizeBuff := 1024 // max size, more than that would be too much
+	if transcoder.SizeBufferToProcess > 0 {
+		sizeBuff = transcoder.SizeBufferToProcess
+	}
+	nTotal := 0
+	buf := make([]byte, sizeBuff) // read and write in chunks of 1024 byte
+	for {
 		n, err := in.Reader.Read(buf)
 		if err != nil && err != io.EOF {
 			return nTotal, fmt.Errorf("error reading input file: %v", err)
@@ -51,6 +55,7 @@ func equalSpaceEncoding(in *AudioFileIn, out *AudioFileOut) (int, error) {
 		if n == 0 {
 			break
 		}
+		buf = buf[:n]
 		// TODO: add some function here
 		out.Length += len(buf)
 		nTotal += n
@@ -63,9 +68,14 @@ func equalSpaceEncoding(in *AudioFileIn, out *AudioFileOut) (int, error) {
 }
 
 func differentSpaceEncoding(in *AudioFileIn, out *AudioFileOut, transcoder *Transcoder) (int, error) {
-	nTotal, err := 0, error(nil)
-	buf := make([]byte, 32) // read and write in chunks of 1024 byte
-	for err == nil {
+	sizeBuff := 1024 // max size, more than that would be too much
+	if transcoder.SizeBufferToProcess > 0 {
+		sizeBuff = transcoder.SizeBufferToProcess
+	}
+	nTotal := 0
+	buf := make([]byte, sizeBuff)    // input buffer
+	buf2 := make([]byte, sizeBuff*2) //  output buffer
+	for {
 		n, err := in.Reader.Read(buf)
 		if err != nil && err != io.EOF {
 			return nTotal, fmt.Errorf("error reading input file: %v", err)
@@ -73,12 +83,11 @@ func differentSpaceEncoding(in *AudioFileIn, out *AudioFileOut, transcoder *Tran
 		if n == 0 {
 			break
 		}
+		buf = buf[:n]
 		// buf2 is different size than buf
-		buf2, _ := decoder.DecodeFrameUlaw2Lpcm(buf)
+		buf2, _ = decoder.DecodeFrameUlaw2Lpcm(buf) // IMPORTANT:buf cut to n bytes
 		out.Length += len(buf2)
-		nTotal += n
-
-		if _, err = out.Writer.Write(buf); err != nil {
+		if _, err = out.Writer.Write(buf2); err != nil {
 			return nTotal, fmt.Errorf("error writing output file: %v", err)
 		}
 

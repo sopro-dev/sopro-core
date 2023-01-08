@@ -93,7 +93,7 @@ func mulaw2Wav(in *AudioFileIn, out *AudioFileOut, transcoder *Transcoder) (err 
 	out.Length += len(headersWav)
 
 	if transcoder.Verbose {
-		printWavHeaders(headersWav)
+		audioconfig.PrintWavHeaders(headersWav)
 	}
 
 	// Copy the data from the input file to the output file in chunks
