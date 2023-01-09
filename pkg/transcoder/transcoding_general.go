@@ -42,8 +42,8 @@ func TranscodeBytes(in *AudioFileIn, out *AudioFileOut, transcoder *Transcoder) 
 
 func equalSpaceEncoding(in *AudioFileIn, out *AudioFileOut, transcoder *Transcoder) (int, error) {
 	sizeBuff := 1024 // max size, more than that would be too much
-	if transcoder.SizeBufferToProcess > 0 {
-		sizeBuff = transcoder.SizeBufferToProcess
+	if transcoder.SizeBuffer > 0 {
+		sizeBuff = transcoder.SizeBuffer
 	}
 	nTotal := 0
 	buf := make([]byte, sizeBuff) // read and write in chunks of 1024 byte
@@ -69,8 +69,8 @@ func equalSpaceEncoding(in *AudioFileIn, out *AudioFileOut, transcoder *Transcod
 
 func differentSpaceEncoding(in *AudioFileIn, out *AudioFileOut, transcoder *Transcoder) (int, error) {
 	sizeBuff := 1024 // max size, more than that would be too much
-	if transcoder.SizeBufferToProcess > 0 {
-		sizeBuff = transcoder.SizeBufferToProcess
+	if transcoder.SizeBuffer > 0 {
+		sizeBuff = transcoder.SizeBuffer
 	}
 	nTotal := 0
 	buf := make([]byte, sizeBuff)    // input buffer

@@ -4,6 +4,14 @@
 
 Sox is a great tool, but it's not easy to use. SoPro is a next generation sound processing tool that is easy to use and easy to extend. By now only audio files can be converted to other formats, but in the future more features will be added, like video processing, etc.
 
+Functionalities:
+
+## Installation
+
+```bash
+go get -v github.com/pablodz/sopro
+```
+
 ## Methods planned to be implemented
 
 - [x] Chunked
@@ -11,8 +19,18 @@ Sox is a great tool, but it's not easy to use. SoPro is a next generation sound 
 - [ ] Batch
 - [ ] Streaming
 
+## Examples
+
+Check [./examples](./examples/) folder
+
 ## Roadmap
 
+- [ ] CLI (sox-friendly)
+- [ ] GUI (in another repo)
+- [ ] Microservice (in another repo)
+  - [ ] HTTP
+  - [ ] Websocket
+  - [ ] gRPC
 - [x] Audio file conversion
   - [ ] Format conversion [Work in progress...](docs/format_table.md)
   - [ ] Bitrate conversion

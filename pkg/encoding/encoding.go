@@ -7,6 +7,7 @@ const (
 )
 
 var ENCODINGS = map[int]string{
+	NOT_FILLED:        "Not filled",
 	SPACE_LINEAR:      "Linear",
 	SPACE_LOGARITHMIC: "Logarithmic",
 }
