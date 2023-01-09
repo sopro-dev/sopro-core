@@ -4,7 +4,26 @@
 
 Sox is a great tool, but it's not easy to use. SoPro is a next generation sound processing tool that is easy to use and easy to extend. By now only audio files can be converted to other formats, but in the future more features will be added, like video processing, etc.
 
-Functionalities:
+```
+                     ┌─────────────────┐
+ raw data    ───────►│                 ├────────►   returns raw data in other format
+                     │                 │
+                     │                 │
+ websocket   ───────►│                 ├────────►   returns raw data in other formats
+                     │                 │
+                     │    SOPRO-CORE   │
+ chunked data───────►│                 ├────────►   returns chunked processed data
+                     │                 │
+                     │                 │
+ gRPC        ───────►│                 ├────────►   returns grpc chunked data
+                     │                 │
+                     └─────────────────┘
+
+Examples:
+
+- ulaw -> wav pcm
+- ulaw -> wav pcm normalized (on the fly)
+```
 
 ## Installation
 
