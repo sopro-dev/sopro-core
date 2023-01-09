@@ -25,6 +25,9 @@ Examples:
 - ulaw -> wav pcm normalized (on the fly)
 ```
 
+Plugins:
+- Connectivity to python neural network inference api with grpc/http and caching the inference
+
 ## Installation
 
 ```bash
