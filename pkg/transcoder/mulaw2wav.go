@@ -9,9 +9,9 @@ import (
 	"os"
 
 	"github.com/guptarohit/asciigraph"
-	"github.com/pablodz/sopro/sopro/audioconfig"
-	"github.com/pablodz/sopro/sopro/cpuarch"
-	"github.com/pablodz/sopro/sopro/encoding"
+	"github.com/pablodz/sopro/pkg/audioconfig"
+	"github.com/pablodz/sopro/pkg/cpuarch"
+	"github.com/pablodz/sopro/pkg/encoding"
 	"golang.org/x/term"
 )
 

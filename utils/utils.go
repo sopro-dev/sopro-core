@@ -1,4 +1,4 @@
-package transcoder
+package utils
 
 import (
 	"fmt"
@@ -9,13 +9,7 @@ import (
 	"github.com/olekukonko/tablewriter"
 )
 
-func (t *Transcoder) Println(items ...any) {
-	if t.Verbose {
-		fmt.Println(items...)
-	}
-}
-
-func printGraphInt16(items []int16) {
+func PrintGraphInt16(items []int16) {
 	// Convert the slice of int16 values to a slice of strings
 
 	stringSlice := make([]float64, len(items))
@@ -39,7 +33,7 @@ func printGraphInt16(items []int16) {
 
 }
 
-func printTableInt16(items []int16, numPerRow int) {
+func PrintTableInt16(items []int16, numPerRow int) {
 	// Convert the slice of int16 values to a slice of strings
 	stringSlice := make([]string, len(items))
 	for i, val := range items {

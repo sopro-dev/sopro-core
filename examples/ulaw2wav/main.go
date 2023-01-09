@@ -3,12 +3,12 @@ package main
 import (
 	"os"
 
-	"github.com/pablodz/sopro/sopro/audioconfig"
-	"github.com/pablodz/sopro/sopro/cpuarch"
-	"github.com/pablodz/sopro/sopro/encoding"
-	"github.com/pablodz/sopro/sopro/fileformat"
-	"github.com/pablodz/sopro/sopro/method"
-	"github.com/pablodz/sopro/sopro/transcoder"
+	"github.com/pablodz/sopro/pkg/audioconfig"
+	"github.com/pablodz/sopro/pkg/cpuarch"
+	"github.com/pablodz/sopro/pkg/encoding"
+	"github.com/pablodz/sopro/pkg/fileformat"
+	"github.com/pablodz/sopro/pkg/method"
+	"github.com/pablodz/sopro/pkg/transcoder"
 )
 
 func main() {

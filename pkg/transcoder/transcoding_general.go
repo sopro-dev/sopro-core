@@ -6,7 +6,7 @@ import (
 	"log"
 	"sync"
 
-	"github.com/pablodz/sopro/sopro/decoder"
+	"github.com/pablodz/sopro/pkg/decoder"
 )
 
 var doOnceTranscoding sync.Once
