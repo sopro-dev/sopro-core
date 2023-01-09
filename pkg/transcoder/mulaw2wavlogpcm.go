@@ -5,18 +5,13 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"math"
 	"os"
 
-	"github.com/guptarohit/asciigraph"
 	"github.com/pablodz/sopro/pkg/audioconfig"
 	"github.com/pablodz/sopro/pkg/cpuarch"
 	"github.com/pablodz/sopro/pkg/encoding"
 	"golang.org/x/term"
 )
-
-var WIDTH_TERMINAL = 80
-var HEIGHT_TERMINAL = 30
 
 func init() {
 
@@ -31,7 +26,7 @@ func init() {
 // Transcode an ulaw file to a wav file (large files supported)
 // https://raw.githubusercontent.com/corkami/pics/master/binary/WAV.png
 // http://www.topherlee.com/software/pcm-tut-wavformat.html
-func mulaw2WavLpcm(in *AudioFileIn, out *AudioFileOut, transcoder *Transcoder) (err error) {
+func mulaw2WavLogpcm(in *AudioFileIn, out *AudioFileOut, transcoder *Transcoder) (err error) {
 
 	// read all the file
 	if transcoder.Verbose {
@@ -74,7 +69,7 @@ func mulaw2WavLpcm(in *AudioFileIn, out *AudioFileOut, transcoder *Transcoder) (
 		'W', 'A', 'V', 'E', // Format
 		'f', 'm', 't', ' ', // Sub-chunk 1 ID
 		16, 0, 0, 0, // Sub-chunk 1 size
-		audioconfig.WAVE_FORMAT_PCM, 0, // Audio format (PCM)
+		audioconfig.WAVE_FORMAT_MULAW, 0, // Audio format (1 = PCM)
 		byte(channels), 0, // Number of channels
 		byte(sampleRate & 0xFF),                                        // sample rate (low)
 		byte(sampleRate >> 8 & 0xFF),                                   // sample rate (mid)
@@ -148,112 +143,4 @@ func mulaw2WavLpcm(in *AudioFileIn, out *AudioFileOut, transcoder *Transcoder) (
 
 	return nil
 
-}
-
-func graphIn(in *AudioFileIn) {
-	log.Println("[WARNING] Reading the whole file into memory. This may take a while...")
-	// make an independent copy of the file
-	file := in.Data.(*os.File)
-	f, err := os.Open(file.Name())
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer f.Close()
-
-	data, err := io.ReadAll(f)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	values := make([]float64, len(data))
-	for i, val := range data {
-		values[i] = float64(val)
-	}
-
-	fmt.Println(asciigraph.Plot(
-		values,
-		asciigraph.Height(HEIGHT_TERMINAL/3),
-		asciigraph.Width(WIDTH_TERMINAL-10),
-		asciigraph.Caption("Graph for input ulaw file"),
-		asciigraph.SeriesColors(
-			asciigraph.Red,
-		),
-	))
-}
-
-func graphOut(in *AudioFileIn, out *AudioFileOut) {
-	log.Println("[WARNING] Reading the whole file into memory. This may take a while...")
-	file := in.Data.(*os.File)
-	f, err := os.Open(file.Name())
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer f.Close()
-	data, err := io.ReadAll(f)
-	if err != nil {
-		log.Fatal(err)
-	}
-	input := make([]float64, len(data)*2)
-	for i, val := range data {
-		input[i*2] = float64(val)
-		input[i*2+1] = float64(val)
-	}
-
-	outFile := out.Data.(*os.File)
-	fOut, err := os.Open(outFile.Name())
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer fOut.Close()
-	outData, err := io.ReadAll(fOut)
-	if err != nil {
-		log.Fatal(err)
-	}
-	output := make([]float64, len(outData))
-	for i, val := range outData {
-		if i%2 == 0 {
-			continue
-		}
-		output[i] = float64(val)
-	}
-
-	maxData := make([]float64, len(outData))
-	for i := range outData {
-		maxData[i] = float64(math.MaxInt8)
-	}
-	linesMiddle := maxData[44:]
-	lineInput := input
-	lineOutput := output[44:]
-
-	lineInput[0] = 0
-	lineInput[len(lineInput)-1] = math.Round(float64(math.MaxUint8) / 2)
-	lineOutput[0] = 0
-	lineOutput[len(lineOutput)-1] = math.Round(float64(math.MaxUint8) / 2)
-
-	log.Println("Sample of the input file (ulaw) (first 100 samples of n)")
-	fmt.Println(asciigraph.PlotMany(
-		[][]float64{linesMiddle, lineInput},
-		asciigraph.Height(HEIGHT_TERMINAL/3),
-		asciigraph.Width(WIDTH_TERMINAL-10),
-		asciigraph.Caption("Graph for input ulaw file"),
-		asciigraph.SeriesColors(
-			asciigraph.Blue,
-			asciigraph.Red,
-			asciigraph.Green,
-		),
-	))
-
-	log.Println("Length Zeros", len(linesMiddle), "Length Input", len(lineInput), "Length Output[44:]", len(lineOutput))
-	fmt.Println(asciigraph.PlotMany(
-		[][]float64{linesMiddle, lineInput, lineOutput},
-		asciigraph.Height(HEIGHT_TERMINAL/3),
-		asciigraph.Width(WIDTH_TERMINAL-10),
-		asciigraph.Caption("Graph for output wav data file"),
-		asciigraph.SeriesColors(
-			asciigraph.Blue,
-			asciigraph.Red,
-			asciigraph.Green,
-		),
-	))
-	fmt.Println("*First and last byte are not representative")
 }

@@ -21,7 +21,7 @@ func main() {
 	defer in.Close()
 
 	// Create the output file
-	out, err := os.Create("./internal/samples/result_sample_ulaw_mono_8000_be.wav")
+	out, err := os.Create("./internal/samples/result_sample_ulaw_mono_8000_le_logpcm.wav")
 	if err != nil {
 		panic(err)
 	}
@@ -36,8 +36,8 @@ func main() {
 		TargetConfigs: transcoder.TranscoderAudioConfig{
 			Endianness: cpuarch.LITTLE_ENDIAN,
 		},
-		SizeBufferToProcess: 1024,
-		Verbose:             true,
+		SizeBuffer: 1024,
+		Verbose:    true,
 	}
 
 	// Transcode the file
@@ -59,9 +59,9 @@ func main() {
 			AudioFileGeneral: transcoder.AudioFileGeneral{
 				Format: fileformat.AUDIO_WAV,
 				Config: audioconfig.WavConfig{
-					BitDepth:   16,
+					BitDepth:   8,
 					Channels:   1,
-					Encoding:   encoding.SPACE_LINEAR,
+					Encoding:   encoding.SPACE_LOGARITHMIC,
 					SampleRate: 8000,
 				},
 			},
