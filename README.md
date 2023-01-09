@@ -1,3 +1,5 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/pablodz/sopro)](https://goreportcard.com/report/github.com/pablodz/sopro)
+
 # SoPro (next generation SOund PROcessing)
 
 Sox is a great tool, but it's not easy to use. SoPro is a next generation sound processing tool that is easy to use and easy to extend. By now only audio files can be converted to other formats, but in the future more features will be added, like video processing, etc.
