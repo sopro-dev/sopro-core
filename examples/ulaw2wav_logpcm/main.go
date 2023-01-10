@@ -29,7 +29,7 @@ func main() {
 
 	// create a transcoder
 	t := &transcoder.Transcoder{
-		Method: method.BIT_TABLE,
+		MethodT: method.BIT_LOOKUP_TABLE,
 		SourceConfigs: transcoder.TranscoderAudioConfig{
 			Endianness: cpuarch.LITTLE_ENDIAN,
 		},

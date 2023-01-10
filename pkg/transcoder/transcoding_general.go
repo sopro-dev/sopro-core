@@ -35,7 +35,7 @@ func TranscodeBytes(in *AudioFileIn, out *AudioFileOut, transcoder *Transcoder) 
 
 	}
 
-	log.Println("Transcoding done:", bitsProcessed, "bits processed")
+	transcoder.Println("Transcoding done:", bitsProcessed, "bits processed")
 
 	return nil
 }
@@ -73,35 +73,36 @@ func differentSpaceEncoding(in *AudioFileIn, out *AudioFileOut, transcoder *Tran
 		sizeBuff = transcoder.SizeBuffer
 	}
 	nTotal := 0
-	buf := make([]byte, sizeBuff)    // input buffer
-	buf2 := make([]byte, sizeBuff*2) //  output buffer
+	bufIn := make([]byte, sizeBuff)    // input buffer
+	bufOut := make([]byte, sizeBuff*2) //  output buffer
 	for {
-		n, err := in.Reader.Read(buf)
+		n, err := in.Reader.Read(bufIn)
 		if err != nil && err != io.EOF {
 			return nTotal, fmt.Errorf("error reading input file: %v", err)
 		}
 		if n == 0 {
 			break
 		}
-		buf = buf[:n]
+		bufIn = bufIn[:n]
 		// buf2 is different size than buf
-		buf2, _ = decoder.DecodeFrameUlaw2Lpcm(buf) // IMPORTANT:buf cut to n bytes
-		out.Length += len(buf2)
-		if _, err = out.Writer.Write(buf2); err != nil {
+		bufOut, _ = decoder.DecodeFrameUlaw2Lpcm(bufIn) // IMPORTANT:buf cut to n bytes
+		out.Length += len(bufOut)
+		if _, err = out.Writer.Write(bufOut); err != nil {
 			return nTotal, fmt.Errorf("error writing output file: %v", err)
 		}
+		nTotal += n
 
 		doOnceTranscoding.Do(func() {
 			transcoder.Println("[Transcoder] Transcoding data - sample of the first 4 bytes (hex)")
 			onlyNFirst := 4
 			transcoder.Println(
-				"[OLD]", fmt.Sprintf("% 2x", buf[:onlyNFirst]),
-				"\n[NEW]", fmt.Sprintf("% 2x", buf2[:onlyNFirst*2]),
+				"[OLD]", fmt.Sprintf("% 2x", bufIn[:onlyNFirst]),
+				"\n[NEW]", fmt.Sprintf("% 2x", bufOut[:onlyNFirst*2]),
 			)
 			transcoder.Println("[Transcoder] Transcoding data - sample of the first 4 bytes (decimal)")
 			transcoder.Println(
-				"[OLD]", fmt.Sprintf("%3d", buf[:onlyNFirst]),
-				"\n[NEW]", fmt.Sprintf("%3d", buf2[:onlyNFirst*2]),
+				"[OLD]", fmt.Sprintf("%3d", bufIn[:onlyNFirst]),
+				"\n[NEW]", fmt.Sprintf("%3d", bufOut[:onlyNFirst*2]),
 			)
 		})
 	}

@@ -1,4 +1,4 @@
-package downsampler
+package resampler
 
 import "errors"
 

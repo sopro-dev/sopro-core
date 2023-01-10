@@ -22,7 +22,6 @@ func init() {
 	}
 }
 
-// TODO: split functions for different sizes of files
 // Transcode an ulaw file to a wav file (large files supported)
 // https://raw.githubusercontent.com/corkami/pics/master/binary/WAV.png
 // http://www.topherlee.com/software/pcm-tut-wavformat.html

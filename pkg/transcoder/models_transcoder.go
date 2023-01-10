@@ -1,7 +1,8 @@
 package transcoder
 
 type Transcoder struct {
-	Method                int                   // the method of transcoding (e.g. 1, 2, 3, etc.)
+	MethodT               int                   // the method of transcoding (e.g. 1, 2, 3, etc.)
+	MethodR               int                   // the method of resampling (e.g. 1, 2, 3, etc.)
 	MethodAdvancedConfigs interface{}           // the specific configuration options for the transcoding method
 	SizeBuffer            int                   // the size of the buffer to read from the input file. Default is 1024
 	SourceConfigs         TranscoderAudioConfig // the source configuration
