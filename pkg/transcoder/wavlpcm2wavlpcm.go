@@ -4,30 +4,14 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"log"
-	"math"
 	"os"
 
-	"github.com/guptarohit/asciigraph"
 	"github.com/pablodz/sopro/pkg/audioconfig"
 	"github.com/pablodz/sopro/pkg/cpuarch"
 	"github.com/pablodz/sopro/pkg/encoding"
-	"golang.org/x/term"
 )
 
-func init() {
-
-	err := error(nil)
-	WIDTH_TERMINAL, HEIGHT_TERMINAL, err = term.GetSize(0)
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
-// Transcode an ulaw file to a wav file (large files supported)
-// https://raw.githubusercontent.com/corkami/pics/master/binary/WAV.png
-// http://www.topherlee.com/software/pcm-tut-wavformat.html
-func mulaw2WavLpcm(in *AudioFileIn, out *AudioFileOut, transcoder *Transcoder) (err error) {
+func wavLpcm2wavLpcm(in *AudioFileIn, out *AudioFileOut, transcoder *Transcoder) (err error) {
 
 	// read all the file
 	if transcoder.Verbose {
@@ -38,7 +22,7 @@ func mulaw2WavLpcm(in *AudioFileIn, out *AudioFileOut, transcoder *Transcoder) (
 	channels := out.Config.(audioconfig.WavConfig).Channels
 	sampleRate := out.Config.(audioconfig.WavConfig).SampleRate
 	bitsPerSample := out.Config.(audioconfig.WavConfig).BitDepth
-	transcoder.SourceConfigs.Encoding = in.Config.(audioconfig.MulawConfig).Encoding
+	transcoder.SourceConfigs.Encoding = in.Config.(audioconfig.WavConfig).Encoding
 	transcoder.TargetConfigs.Encoding = out.Config.(audioconfig.WavConfig).Encoding
 	transcoder.BitDepth = bitsPerSample
 
@@ -49,10 +33,10 @@ func mulaw2WavLpcm(in *AudioFileIn, out *AudioFileOut, transcoder *Transcoder) (
 
 	transcoder.Println(
 		"\n[Format]                      ", in.Format, "=>", out.Format,
-		"\n[Encoding]                    ", encoding.ENCODINGS[in.Config.(audioconfig.MulawConfig).Encoding], "=>", encoding.ENCODINGS[out.Config.(audioconfig.WavConfig).Encoding],
-		"\n[Channels]                    ", in.Config.(audioconfig.MulawConfig).Channels, "=>", channels,
-		"\n[SampleRate]                  ", in.Config.(audioconfig.MulawConfig).SampleRate, "=>", sampleRate, "kHz",
-		"\n[BitDepth]                    ", in.Config.(audioconfig.MulawConfig).BitDepth, "=>", bitsPerSample, "bytes",
+		"\n[Encoding]                    ", encoding.ENCODINGS[in.Config.(audioconfig.WavConfig).Encoding], "=>", encoding.ENCODINGS[out.Config.(audioconfig.WavConfig).Encoding],
+		"\n[Channels]                    ", in.Config.(audioconfig.WavConfig).Channels, "=>", channels,
+		"\n[SampleRate]                  ", in.Config.(audioconfig.WavConfig).SampleRate, "=>", sampleRate, "kHz",
+		"\n[BitDepth]                    ", in.Config.(audioconfig.WavConfig).BitDepth, "=>", bitsPerSample, "bytes",
 		"\n[Transcoder][Source][Encoding]", encoding.ENCODINGS[transcoder.SourceConfigs.Encoding],
 		"\n[Transcoder][Target][Encoding]", encoding.ENCODINGS[transcoder.TargetConfigs.Encoding],
 		"\n[Transcoder][BitDepth]        ", transcoder.BitDepth,
@@ -63,6 +47,8 @@ func mulaw2WavLpcm(in *AudioFileIn, out *AudioFileOut, transcoder *Transcoder) (
 	in.Reader = bufio.NewReader(in.Data)
 	out.Writer = bufio.NewWriter(out.Data)
 	out.Length = 0
+
+	in.Reader.Discard(44) // avoid first 44 bytes of in
 
 	headersWav := []byte{
 		'R', 'I', 'F', 'F', // Chunk ID
@@ -93,7 +79,7 @@ func mulaw2WavLpcm(in *AudioFileIn, out *AudioFileOut, transcoder *Transcoder) (
 	}
 
 	// Copy the data from the input file to the output file in chunks
-	if err = TranscodeBytes(in, out, transcoder); err != nil {
+	if err = ResampleBytes(in, out, transcoder); err != nil {
 		return fmt.Errorf("error converting bytes: %v", err)
 	}
 
@@ -144,112 +130,4 @@ func mulaw2WavLpcm(in *AudioFileIn, out *AudioFileOut, transcoder *Transcoder) (
 
 	return nil
 
-}
-
-func graphIn(in *AudioFileIn) {
-	log.Println("[WARNING] Reading the whole file into memory. This may take a while...")
-	// make an independent copy of the file
-	file := in.Data.(*os.File)
-	f, err := os.Open(file.Name())
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer f.Close()
-
-	data, err := io.ReadAll(f)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	values := make([]float64, len(data))
-	for i, val := range data {
-		values[i] = float64(val)
-	}
-
-	fmt.Println(asciigraph.Plot(
-		values,
-		asciigraph.Height(HEIGHT_TERMINAL/3),
-		asciigraph.Width(WIDTH_TERMINAL-10),
-		asciigraph.Caption("Graph for input ulaw file"),
-		asciigraph.SeriesColors(
-			asciigraph.Red,
-		),
-	))
-}
-
-func graphOut(in *AudioFileIn, out *AudioFileOut) {
-	log.Println("[WARNING] Reading the whole file into memory. This may take a while...")
-	file := in.Data.(*os.File)
-	f, err := os.Open(file.Name())
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer f.Close()
-	data, err := io.ReadAll(f)
-	if err != nil {
-		log.Fatal(err)
-	}
-	input := make([]float64, len(data)*2)
-	for i, val := range data {
-		input[i*2] = float64(val)
-		input[i*2+1] = float64(val)
-	}
-
-	outFile := out.Data.(*os.File)
-	fOut, err := os.Open(outFile.Name())
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer fOut.Close()
-	outData, err := io.ReadAll(fOut)
-	if err != nil {
-		log.Fatal(err)
-	}
-	output := make([]float64, len(outData))
-	for i, val := range outData {
-		if i%2 == 0 {
-			continue
-		}
-		output[i] = float64(val)
-	}
-
-	maxData := make([]float64, len(outData))
-	for i := range outData {
-		maxData[i] = float64(math.MaxInt8)
-	}
-	linesMiddle := maxData[44:]
-	lineInput := input
-	lineOutput := output[44:]
-
-	lineInput[0] = 0
-	lineInput[len(lineInput)-1] = math.Round(float64(math.MaxUint8) / 2)
-	lineOutput[0] = 0
-	lineOutput[len(lineOutput)-1] = math.Round(float64(math.MaxUint8) / 2)
-
-	log.Println("Sample of the input file (ulaw) (first 100 samples of n)")
-	fmt.Println(asciigraph.PlotMany(
-		[][]float64{linesMiddle, lineInput},
-		asciigraph.Height(HEIGHT_TERMINAL/3),
-		asciigraph.Width(WIDTH_TERMINAL-10),
-		asciigraph.Caption("Graph for input ulaw file"),
-		asciigraph.SeriesColors(
-			asciigraph.Blue,
-			asciigraph.Red,
-			asciigraph.Green,
-		),
-	))
-
-	log.Println("Length Zeros", len(linesMiddle), "Length Input", len(lineInput), "Length Output[44:]", len(lineOutput))
-	fmt.Println(asciigraph.PlotMany(
-		[][]float64{linesMiddle, lineInput, lineOutput},
-		asciigraph.Height(HEIGHT_TERMINAL/3),
-		asciigraph.Width(WIDTH_TERMINAL-10),
-		asciigraph.Caption("Graph for output wav data file"),
-		asciigraph.SeriesColors(
-			asciigraph.Blue,
-			asciigraph.Red,
-			asciigraph.Green,
-		),
-	))
-	fmt.Println("*First and last byte are not representative")
 }
