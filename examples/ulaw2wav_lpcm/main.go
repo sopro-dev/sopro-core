@@ -12,7 +12,6 @@ import (
 )
 
 func main() {
-
 	// Open the input file
 	in, err := os.Open("./internal/samples/recording.ulaw")
 	if err != nil {
@@ -71,5 +70,4 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
 }

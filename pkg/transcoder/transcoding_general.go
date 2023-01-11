@@ -12,7 +12,6 @@ import (
 var doOnceTranscoding sync.Once
 
 func TranscodeBytes(in *AudioFileIn, out *AudioFileOut, transcoder *Transcoder) error {
-
 	equalEncod := (transcoder.SourceConfigs.Encoding == transcoder.TargetConfigs.Encoding)
 	bitsProcessed := 0
 	err := error(nil)

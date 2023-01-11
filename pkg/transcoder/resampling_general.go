@@ -12,7 +12,6 @@ import (
 var doOnceResampling sync.Once
 
 func ResampleBytes(in *AudioFileIn, out *AudioFileOut, transcoder *Transcoder) error {
-
 	bitsProcessed, err := differentSampleRate(in, out, transcoder)
 	if err != nil {
 		return err

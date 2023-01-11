@@ -14,7 +14,6 @@ import (
 )
 
 func init() {
-
 	err := error(nil)
 	WIDTH_TERMINAL, HEIGHT_TERMINAL, err = term.GetSize(0)
 	if err != nil {
@@ -26,7 +25,6 @@ func init() {
 // https://raw.githubusercontent.com/corkami/pics/master/binary/WAV.png
 // http://www.topherlee.com/software/pcm-tut-wavformat.html
 func mulaw2WavLogpcm(in *AudioFileIn, out *AudioFileOut, transcoder *Transcoder) (err error) {
-
 	// read all the file
 	if transcoder.Verbose {
 		graphIn(in)
@@ -141,5 +139,4 @@ func mulaw2WavLogpcm(in *AudioFileIn, out *AudioFileOut, transcoder *Transcoder)
 	}
 
 	return nil
-
 }

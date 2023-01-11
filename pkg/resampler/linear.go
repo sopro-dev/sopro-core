@@ -1,7 +1,6 @@
 package resampler
 
 func LinearInterpolation[T int16 | int32 | int64 | int | byte](data []T, ratio float64) ([]T, error) {
-
 	// Calculate the length of the resampled data slice.
 	resampledLength := int(float64(len(data)) / ratio)
 
