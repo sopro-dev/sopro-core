@@ -2,6 +2,7 @@ package transcoder
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io"
 	"log"
@@ -148,6 +149,12 @@ func mulaw2WavLpcm(in *AudioFileIn, out *AudioFileOut, transcoder *Transcoder) (
 
 func graphIn(in *AudioFileIn) {
 	log.Println("[WARNING] Reading the whole file into memory. This may take a while...")
+	// check if in is *bytes.Buffer
+	if _, ok := in.Data.(*bytes.Buffer); ok {
+		log.Println("Input file is a bytes.Buffer")
+		return
+	}
+
 	// make an independent copy of the file
 	file := in.Data.(*os.File)
 	f, err := os.Open(file.Name())
@@ -179,6 +186,11 @@ func graphIn(in *AudioFileIn) {
 
 func graphOut(in *AudioFileIn, out *AudioFileOut) {
 	log.Println("[WARNING] Reading the whole file into memory. This may take a while...")
+	// check if in is *bytes.Buffer
+	if _, ok := in.Data.(*bytes.Buffer); ok {
+		log.Println("Input file is a bytes.Buffer")
+		return
+	}
 	file := in.Data.(*os.File)
 	f, err := os.Open(file.Name())
 	if err != nil {

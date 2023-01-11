@@ -20,17 +20,18 @@ func (t *Transcoder) Mulaw2Wav(in *AudioFileIn, out *AudioFileOut) error {
 	outSpace := out.Config.(audioconfig.WavConfig).Encoding
 
 	switch {
-	case t.MethodT != method.BIT_LOOKUP_TABLE &&
+	case t.MethodT == method.BIT_LOOKUP_TABLE &&
 		inSpace == encoding.SPACE_LOGARITHMIC &&
 		outSpace == encoding.SPACE_LINEAR:
 		return mulaw2WavLpcm(in, out, t)
-	case t.MethodT != method.BIT_LOOKUP_TABLE &&
+	case t.MethodT == method.BIT_LOOKUP_TABLE &&
 		inSpace == encoding.SPACE_LOGARITHMIC &&
 		outSpace == encoding.SPACE_LOGARITHMIC:
 		return mulaw2WavLogpcm(in, out, t)
 	default:
 		return fmt.Errorf(
-			"%s: %s -> %s",
+			"[%s] %s: %s -> %s",
+			method.METHODS[t.MethodT],
 			ErrUnsupportedConversion,
 			encoding.ENCODINGS[inSpace],
 			encoding.ENCODINGS[outSpace],
