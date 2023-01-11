@@ -30,7 +30,6 @@ func PrintGraphInt16(items []int16) {
 	fmt.Println("MaxX:   ", len(stringSlice))
 	fmt.Println("DeltaX: ", (len(stringSlice) - 0))
 	fmt.Println()
-
 }
 
 func PrintTableInt16(items []int16, numPerRow int) {

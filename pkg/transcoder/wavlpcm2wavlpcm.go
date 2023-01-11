@@ -12,7 +12,6 @@ import (
 )
 
 func wavLpcm2wavLpcm(in *AudioFileIn, out *AudioFileOut, transcoder *Transcoder) (err error) {
-
 	// read all the file
 	if transcoder.Verbose {
 		graphIn(in)
@@ -129,5 +128,4 @@ func wavLpcm2wavLpcm(in *AudioFileIn, out *AudioFileOut, transcoder *Transcoder)
 	}
 
 	return nil
-
 }

@@ -13,8 +13,7 @@ import (
 )
 
 func main() {
-
-	data := []byte{0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 4, 2, 3, 3, 5, 01, 7, 8, 1, 4, 0}
+	data := []byte{0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 4, 2, 3, 3, 5, 1, 7, 8, 1, 4, 0}
 	// Open the input file
 	in := bytes.NewBuffer(data)
 
@@ -69,5 +68,4 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
 }

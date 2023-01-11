@@ -9,13 +9,14 @@ import (
 	"github.com/pablodz/sopro/pkg/resampler"
 )
 
-var WIDTH_TERMINAL = 80
-var HEIGHT_TERMINAL = 30
+var (
+	WIDTH_TERMINAL  = 80
+	HEIGHT_TERMINAL = 30
+)
 
 const ErrUnsupportedConversion = "unsupported conversion"
 
 func (t *Transcoder) Mulaw2Wav(in *AudioFileIn, out *AudioFileOut) error {
-
 	inSpace := in.Config.(audioconfig.MulawConfig).Encoding
 	outSpace := out.Config.(audioconfig.WavConfig).Encoding
 
@@ -41,7 +42,6 @@ func (t *Transcoder) Mulaw2Wav(in *AudioFileIn, out *AudioFileOut) error {
 }
 
 func (t *Transcoder) Wav2Wav(in *AudioFileIn, out *AudioFileOut) error {
-
 	inSpace := in.Config.(audioconfig.WavConfig).Encoding
 	outSpace := out.Config.(audioconfig.WavConfig).Encoding
 
