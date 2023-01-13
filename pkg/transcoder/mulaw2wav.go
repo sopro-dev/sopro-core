@@ -16,14 +16,6 @@ import (
 	"golang.org/x/term"
 )
 
-func init() {
-	err := error(nil)
-	WIDTH_TERMINAL, HEIGHT_TERMINAL, err = term.GetSize(0)
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
 // Transcode an ulaw file to a wav file (large files supported)
 // https://raw.githubusercontent.com/corkami/pics/master/binary/WAV.png
 // http://www.topherlee.com/software/pcm-tut-wavformat.html
@@ -170,6 +162,13 @@ func graphIn(in *AudioFileIn) {
 		values[i] = float64(val)
 	}
 
+	WIDTH_TERMINAL, HEIGHT_TERMINAL, err = term.GetSize(0)
+	if err != nil {
+		WIDTH_TERMINAL = 80
+		HEIGHT_TERMINAL = 24
+		log.Println("Error getting terminal size, using default values (80x24) instead")
+	}
+
 	fmt.Println(asciigraph.Plot(
 		values,
 		asciigraph.Height(HEIGHT_TERMINAL/3),
@@ -235,6 +234,12 @@ func graphOut(in *AudioFileIn, out *AudioFileOut) {
 	lineOutput[0] = 0
 	lineOutput[len(lineOutput)-1] = math.Round(float64(math.MaxUint8) / 2)
 
+	WIDTH_TERMINAL, HEIGHT_TERMINAL, err = term.GetSize(0)
+	if err != nil {
+		WIDTH_TERMINAL = 80
+		HEIGHT_TERMINAL = 24
+		log.Println("Error getting terminal size, using default values (80x24) instead")
+	}
 	log.Println("Sample of the input file (ulaw) (first 100 samples of n)")
 	fmt.Println(asciigraph.PlotMany(
 		[][]float64{linesMiddle, lineInput},
