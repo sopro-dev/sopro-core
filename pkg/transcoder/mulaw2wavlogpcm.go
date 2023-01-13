@@ -4,22 +4,12 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"log"
 	"os"
 
 	"github.com/pablodz/sopro/pkg/audioconfig"
 	"github.com/pablodz/sopro/pkg/cpuarch"
 	"github.com/pablodz/sopro/pkg/encoding"
-	"golang.org/x/term"
 )
-
-func init() {
-	err := error(nil)
-	WIDTH_TERMINAL, HEIGHT_TERMINAL, err = term.GetSize(0)
-	if err != nil {
-		log.Fatal(err)
-	}
-}
 
 // Transcode an ulaw file to a wav file (large files supported)
 // https://raw.githubusercontent.com/corkami/pics/master/binary/WAV.png
