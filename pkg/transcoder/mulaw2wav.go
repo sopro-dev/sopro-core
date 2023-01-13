@@ -164,7 +164,9 @@ func graphIn(in *AudioFileIn) {
 
 	WIDTH_TERMINAL, HEIGHT_TERMINAL, err = term.GetSize(0)
 	if err != nil {
-		log.Fatal(err)
+		WIDTH_TERMINAL = 80
+		HEIGHT_TERMINAL = 24
+		log.Println("Error getting terminal size, using default values (80x24) instead")
 	}
 
 	fmt.Println(asciigraph.Plot(
@@ -234,7 +236,9 @@ func graphOut(in *AudioFileIn, out *AudioFileOut) {
 
 	WIDTH_TERMINAL, HEIGHT_TERMINAL, err = term.GetSize(0)
 	if err != nil {
-		log.Fatal(err)
+		WIDTH_TERMINAL = 80
+		HEIGHT_TERMINAL = 24
+		log.Println("Error getting terminal size, using default values (80x24) instead")
 	}
 	log.Println("Sample of the input file (ulaw) (first 100 samples of n)")
 	fmt.Println(asciigraph.PlotMany(
