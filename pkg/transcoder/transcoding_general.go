@@ -3,7 +3,6 @@ package transcoder
 import (
 	"fmt"
 	"io"
-	"log"
 	"sync"
 
 	"github.com/pablodz/sopro/pkg/decoder"
@@ -18,7 +17,7 @@ func TranscodeBytes(in *AudioFileIn, out *AudioFileOut, transcoder *Transcoder) 
 
 	if equalEncod {
 
-		log.Println("Same encodings - no transcoding needed")
+		transcoder.Println("Same encodings - no transcoding needed")
 		bitsProcessed, err = equalSpaceEncoding(in, out, transcoder)
 		if err != nil {
 			return err
