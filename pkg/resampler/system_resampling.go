@@ -3,30 +3,28 @@ package resampler
 import (
 	"fmt"
 	"io"
-	"log"
 
 	"github.com/pablodz/sopro/pkg/audioconfig"
 	"github.com/pablodz/sopro/pkg/resampler/interpolation"
 	"github.com/pablodz/sopro/pkg/sopro"
 )
 
-func ResampleBytes(in *sopro.In, out *sopro.Out, r *Resampler) (int, error) {
+func ResampleBytes(in *sopro.In, out *sopro.Out, rs *Resampler) (int, error) {
 
-	switch r.MethodR {
+	switch rs.MethodR {
 	case LINEAR_INTERPOLATION:
-		return linear_interpolation(in, out, r)
+		return linear_interpolation(in, out, rs)
 	case BAND_LIMITED_INTERPOLATION:
-		log.Println("band limited interpolation")
-		return band_limited_interpolation(in, out, r)
+		return band_limited_interpolation(in, out, rs)
 	}
 
 	return 0, nil
 }
 
-func linear_interpolation(in *sopro.In, out *sopro.Out, r *Resampler) (int, error) {
+func linear_interpolation(in *sopro.In, out *sopro.Out, rs *Resampler) (int, error) {
 	sizeBuff := 1024 // max size, more than that would be too much
-	if r.SizeBuffer > 0 {
-		sizeBuff = r.SizeBuffer
+	if rs.SizeBuffer > 0 {
+		sizeBuff = rs.SizeBuffer
 	}
 	nTotal := 0
 	sampleRateIn := in.Config.(audioconfig.WavConfig).SampleRate
@@ -36,7 +34,7 @@ func linear_interpolation(in *sopro.In, out *sopro.Out, r *Resampler) (int, erro
 
 	bufIn := make([]byte, sizeBuff)               // input buffer
 	bufOut := make([]byte, sizeBuff*int(ratioIO)) // output buffer
-	r.Println("ratio", ratioIO, "ratioInt", int(ratioIO))
+	rs.Println("ratio", ratioIO, "ratioInt", int(ratioIO))
 	for {
 		n, err := in.Reader.Read(bufIn)
 		if err != nil && err != io.EOF {
@@ -55,14 +53,14 @@ func linear_interpolation(in *sopro.In, out *sopro.Out, r *Resampler) (int, erro
 		nTotal += n
 
 		doOnceResampling.Do(func() {
-			r.Println("[Transcoder] Transcoding data - sample of the first 4 bytes (hex)")
+			rs.Println("[Transcoder] Transcoding data - sample of the first 4 bytes (hex)")
 			onlyNFirst := 8
-			r.Println(
+			rs.Println(
 				"[OLD]", fmt.Sprintf("% 2x", bufIn[:onlyNFirst]),
 				"\n[NEW]", fmt.Sprintf("% 2x", bufOut[:onlyNFirst/2]),
 			)
-			r.Println("[Transcoder] Transcoding data - sample of the first 4 bytes (decimal)")
-			r.Println(
+			rs.Println("[Transcoder] Transcoding data - sample of the first 4 bytes (decimal)")
+			rs.Println(
 				"[OLD]", fmt.Sprintf("%3d", bufIn[:onlyNFirst]),
 				"\n[NEW]", fmt.Sprintf("%3d", bufOut[:onlyNFirst/2]),
 			)
@@ -79,11 +77,12 @@ func band_limited_interpolation(in *sopro.In, out *sopro.Out, r *Resampler) (int
 	nTotal := 0
 	sampleRateIn := in.Config.(audioconfig.WavConfig).SampleRate
 	sampleRateOut := out.Config.(audioconfig.WavConfig).SampleRate
-	ratioOI := float64(sampleRateOut) / float64(sampleRateIn)
+	ratioIO := float64(sampleRateIn) / float64(sampleRateOut)
 
-	bufIn := make([]byte, sizeBuff)               // input buffer
-	bufOut := make([]byte, sizeBuff*int(ratioOI)) // output buffer
-	r.Println("ratio", ratioOI, "ratioInt", int(ratioOI))
+	sizeOutBuff := int(float64(sizeBuff) * ratioIO)
+	bufIn := make([]byte, sizeBuff)     // input buffer
+	bufOut := make([]byte, sizeOutBuff) // output buffer
+	r.Println("ratio", ratioIO, "ratioInt", int(ratioIO), "sizeBuff", sizeBuff, "sizeOutBuff", sizeOutBuff)
 	for {
 		n, err := in.Reader.Read(bufIn)
 		if err != nil && err != io.EOF {
@@ -94,7 +93,7 @@ func band_limited_interpolation(in *sopro.In, out *sopro.Out, r *Resampler) (int
 		}
 		bufIn = bufIn[:n] // buf2 is different size than buf
 
-		bufOut, _ = interpolation.BandLimitedSincInterpolation(bufIn, ratioOI) // IMPORTANT:buf cut to n bytes
+		bufOut, _ = interpolation.BandLimitedSincInterpolation(bufIn, ratioIO) // IMPORTANT:buf cut to n bytes
 		out.Length += len(bufOut)
 		if _, err = out.Writer.Write(bufOut); err != nil {
 			return nTotal, fmt.Errorf("error writing output file: %v", err)

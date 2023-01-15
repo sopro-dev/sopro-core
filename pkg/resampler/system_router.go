@@ -8,20 +8,20 @@ import (
 	"github.com/pablodz/sopro/pkg/sopro"
 )
 
-func (r *Resampler) Wav(in *sopro.In, out *sopro.Out) error {
+func (rs *Resampler) Wav(in *sopro.In, out *sopro.Out) error {
 	inSpace := in.Config.(audioconfig.WavConfig).Encoding
 	outSpace := out.Config.(audioconfig.WavConfig).Encoding
 
 	switch {
-	case r.MethodR == LINEAR_INTERPOLATION &&
+	case rs.MethodR == LINEAR_INTERPOLATION &&
 		inSpace == encoding.SPACE_LINEAR &&
 		outSpace == encoding.SPACE_LINEAR:
-		return linearPcm(in, out, r)
-	case r.MethodR == BAND_LIMITED_INTERPOLATION &&
+		return linearPcm(in, out, rs)
+	case rs.MethodR == BAND_LIMITED_INTERPOLATION &&
 		inSpace == encoding.SPACE_LINEAR &&
 		outSpace == encoding.SPACE_LINEAR:
-		return linearPcm(in, out, r)
-	case r.MethodR == LINEAR_INTERPOLATION &&
+		return linearPcm(in, out, rs)
+	case rs.MethodR == LINEAR_INTERPOLATION &&
 		inSpace == encoding.SPACE_LOGARITHMIC &&
 		outSpace == encoding.SPACE_LOGARITHMIC:
 		fallthrough

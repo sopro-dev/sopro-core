@@ -20,7 +20,7 @@ func main() {
 	defer in.Close()
 
 	// Create the output file
-	out, err := os.Create("./internal/samples/v1_16b_8000.wav")
+	out, err := os.Create("./internal/samples/v1_16b_8000_2.wav")
 	if err != nil {
 		panic(err)
 	}
@@ -35,7 +35,7 @@ func main() {
 		OutConfigs: sopro.AudioConfig{
 			Endianness: cpuarch.LITTLE_ENDIAN,
 		},
-		SizeBuffer: 256,
+		SizeBuffer: 1024,
 		Verbose:    true,
 	}
 
@@ -58,10 +58,10 @@ func main() {
 			AudioFileGeneral: sopro.AudioFileGeneral{
 				Format: fileformat.AUDIO_WAV,
 				Config: audioconfig.WavConfig{
-					BitDepth:   8,
+					BitDepth:   16,
 					Channels:   1,
 					Encoding:   encoding.SPACE_LINEAR,
-					SampleRate: 16000,
+					SampleRate: 8000,
 				},
 			},
 		},

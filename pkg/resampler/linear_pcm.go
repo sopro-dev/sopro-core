@@ -13,9 +13,9 @@ import (
 	"github.com/pablodz/sopro/utils"
 )
 
-func linearPcm(in *sopro.In, out *sopro.Out, resampler *Resampler) error {
+func linearPcm(in *sopro.In, out *sopro.Out, rs *Resampler) error {
 	// read all the file
-	if resampler.Verbose {
+	if rs.Verbose {
 		sopro.GraphIn(in)
 	}
 
@@ -23,22 +23,22 @@ func linearPcm(in *sopro.In, out *sopro.Out, resampler *Resampler) error {
 	channels := out.Config.(audioconfig.WavConfig).Channels
 	sampleRate := out.Config.(audioconfig.WavConfig).SampleRate
 	bitsPerSample := out.Config.(audioconfig.WavConfig).BitDepth
-	resampler.InConfigs.Encoding = in.Config.(audioconfig.WavConfig).Encoding
-	resampler.OutConfigs.Encoding = out.Config.(audioconfig.WavConfig).Encoding
+	rs.InConfigs.Encoding = in.Config.(audioconfig.WavConfig).Encoding
+	rs.OutConfigs.Encoding = out.Config.(audioconfig.WavConfig).Encoding
 
-	if resampler.InConfigs.Endianness == cpuarch.NOT_FILLED && resampler.OutConfigs.Endianness == cpuarch.NOT_FILLED {
-		resampler.InConfigs.Endianness = cpuarch.LITTLE_ENDIAN // replace with cpuarch.GetEndianess()
-		resampler.OutConfigs.Endianness = cpuarch.LITTLE_ENDIAN
+	if rs.InConfigs.Endianness == cpuarch.NOT_FILLED && rs.OutConfigs.Endianness == cpuarch.NOT_FILLED {
+		rs.InConfigs.Endianness = cpuarch.LITTLE_ENDIAN // replace with cpuarch.GetEndianess()
+		rs.OutConfigs.Endianness = cpuarch.LITTLE_ENDIAN
 	}
 
-	resampler.Println(
+	rs.Println(
 		"\n[Format]                      ", in.Format, "=>", out.Format,
 		"\n[Encoding]                    ", encoding.ENCODINGS[in.Config.(audioconfig.WavConfig).Encoding], "=>", encoding.ENCODINGS[out.Config.(audioconfig.WavConfig).Encoding],
 		"\n[Channels]                    ", in.Config.(audioconfig.WavConfig).Channels, "=>", channels,
 		"\n[SampleRate]                  ", in.Config.(audioconfig.WavConfig).SampleRate, "=>", sampleRate, "Hz",
 		"\n[BitDepth]                    ", in.Config.(audioconfig.WavConfig).BitDepth, "=>", bitsPerSample, "bytes",
-		"\n[Transcoder][Source][Encoding]", encoding.ENCODINGS[resampler.InConfigs.Encoding],
-		"\n[Transcoder][Target][Encoding]", encoding.ENCODINGS[resampler.OutConfigs.Encoding],
+		"\n[Transcoder][Source][Encoding]", encoding.ENCODINGS[rs.InConfigs.Encoding],
+		"\n[Transcoder][Target][Encoding]", encoding.ENCODINGS[rs.OutConfigs.Encoding],
 		"\n[Transcoder][Endianness]      ", cpuarch.ENDIANESSES[cpuarch.GetEndianess()],
 	)
 
@@ -54,16 +54,15 @@ func linearPcm(in *sopro.In, out *sopro.Out, resampler *Resampler) error {
 	in.Reader.Discard(44) // avoid first 44 bytes of in
 
 	// Copy the data from the input file to the output file in chunks
-	if _, err := ResampleBytes(in, out, resampler); err != nil {
+	if _, err := ResampleBytes(in, out, rs); err != nil {
 		return fmt.Errorf("error converting bytes: %v", err)
 	}
-
 	// Flush the output file
 	err := out.Writer.Flush()
 	if err != nil {
 		return fmt.Errorf("error flushing output file: %v", err)
 	}
-	resampler.Println("Wrote", out.Length, "bytes to output file")
+	rs.Println("Wrote", out.Length, "bytes to output file")
 
 	// Update the file size and data size fields
 	fileFixer := out.Data.(*os.File)
@@ -71,18 +70,18 @@ func linearPcm(in *sopro.In, out *sopro.Out, resampler *Resampler) error {
 	if err != nil {
 		return fmt.Errorf("error seeking file: %v", err)
 	}
-	resampler.Println("Seeked to:", r)
+	rs.Println("Seeked to:", r)
 
 	out.NewConfig(audioconfig.WavConfig{
 		BitDepth:   bitsPerSample,
 		Channels:   channels,
-		Encoding:   resampler.OutConfigs.Encoding,
+		Encoding:   rs.OutConfigs.Encoding,
 		SampleRate: sampleRate,
 		WaveFormat: audioconfig.WAVE_FORMAT_PCM,
 	})
 	headersWav := utils.GenerateWavHeadersWithSize(out.Config.(audioconfig.WavConfig), out.Length)
 
-	if resampler.Verbose {
+	if rs.Verbose {
 		audioconfig.PrintWavHeaders(headersWav)
 	}
 
@@ -90,10 +89,10 @@ func linearPcm(in *sopro.In, out *sopro.Out, resampler *Resampler) error {
 	if err != nil {
 		return fmt.Errorf("error writing file size: %v", err)
 	}
-	resampler.Println("File size:", fmt.Sprintf("% 02x", out.Length-8), "bytes written:", n)
-	resampler.Println("Data size:", fmt.Sprintf("% 02x", out.Length-44), "bytes written:", n)
+	rs.Println("File size:", fmt.Sprintf("% 02x", out.Length-8), "bytes written:", n)
+	rs.Println("Data size:", fmt.Sprintf("% 02x", out.Length-44), "bytes written:", n)
 
-	if resampler.Verbose {
+	if rs.Verbose {
 		sopro.GraphOut(in, out)
 	}
 
