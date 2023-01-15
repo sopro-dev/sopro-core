@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"os"
 
 	"github.com/pablodz/sopro/pkg/audioconfig"
@@ -14,12 +13,15 @@ import (
 )
 
 func main() {
-	data := []byte{0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 4, 2, 3, 3, 5, 1, 7, 8, 1, 4, 0}
 	// Open the input file
-	in := bytes.NewBuffer(data)
+	in, err := os.Open("./internal/samples/recording.ulaw")
+	if err != nil {
+		panic(err)
+	}
+	defer in.Close()
 
 	// Create the output file
-	out, err := os.Create("./internal/samples/output.wav")
+	out, err := os.Create("./internal/samples/result_sample_ulaw_mono_8000_le_logpcm.wav")
 	if err != nil {
 		panic(err)
 	}

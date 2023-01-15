@@ -34,6 +34,10 @@ Plugins:
 go get -v github.com/pablodz/sopro
 ```
 
+## Contribution
+
+Every contribution is welcome. If you want to contribute, please create a branch from `master` and create a PR to `develop` branch.
+
 ## Methods planned to be implemented
 
 - [x] Chunked
