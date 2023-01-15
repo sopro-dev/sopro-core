@@ -20,7 +20,11 @@ func main() {
 	defer in.Close()
 
 	// Create the output file
+<<<<<<< HEAD
 	out, err := os.Create("./internal/samples/v1_16b_8000_2.wav")
+=======
+	out, err := os.Create("./internal/samples/v1_16b_8000.wav")
+>>>>>>> d598982 (refactor, new resampler, new transcoder, sopro models, sinc interpolation and more examples)
 	if err != nil {
 		panic(err)
 	}
@@ -35,7 +39,11 @@ func main() {
 		OutConfigs: sopro.AudioConfig{
 			Endianness: cpuarch.LITTLE_ENDIAN,
 		},
+<<<<<<< HEAD
 		SizeBuffer: 4096,
+=======
+		SizeBuffer: 256,
+>>>>>>> d598982 (refactor, new resampler, new transcoder, sopro models, sinc interpolation and more examples)
 		Verbose:    true,
 	}
 
@@ -58,10 +66,17 @@ func main() {
 			AudioFileGeneral: sopro.AudioFileGeneral{
 				Format: fileformat.AUDIO_WAV,
 				Config: audioconfig.WavConfig{
+<<<<<<< HEAD
 					BitDepth:   16,
 					Channels:   1,
 					Encoding:   encoding.SPACE_LINEAR,
 					SampleRate: 8000,
+=======
+					BitDepth:   8,
+					Channels:   1,
+					Encoding:   encoding.SPACE_LINEAR,
+					SampleRate: 16000,
+>>>>>>> d598982 (refactor, new resampler, new transcoder, sopro models, sinc interpolation and more examples)
 				},
 			},
 		},
