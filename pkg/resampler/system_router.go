@@ -21,6 +21,10 @@ func (rs *Resampler) Wav(in *sopro.In, out *sopro.Out) error {
 		inSpace == encoding.SPACE_LINEAR &&
 		outSpace == encoding.SPACE_LINEAR:
 		return linearPcm(in, out, rs)
+	case rs.MethodR == FRACTIONAL_DELAY_FILTER &&
+		inSpace == encoding.SPACE_LINEAR &&
+		outSpace == encoding.SPACE_LINEAR:
+		return linearPcm(in, out, rs)
 	case rs.MethodR == LINEAR_INTERPOLATION &&
 		inSpace == encoding.SPACE_LOGARITHMIC &&
 		outSpace == encoding.SPACE_LOGARITHMIC:

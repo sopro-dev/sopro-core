@@ -12,6 +12,7 @@ const (
 	LINEAR_INTERPOLATION                    // Linear interpolation
 	POLYNOMIAL_INTERPOLATION                // Polynomial interpolation
 	BAND_LIMITED_INTERPOLATION              // Band limited interpolation
+	FRACTIONAL_DELAY_FILTER
 )
 
 // RESAMPLER_METHODS is a map of resampler methods

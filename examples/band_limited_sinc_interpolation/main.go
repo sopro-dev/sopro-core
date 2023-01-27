@@ -35,7 +35,7 @@ func main() {
 		OutConfigs: sopro.AudioConfig{
 			Endianness: cpuarch.LITTLE_ENDIAN,
 		},
-		SizeBuffer: 1024,
+		SizeBuffer: 4096,
 		Verbose:    true,
 	}
 
