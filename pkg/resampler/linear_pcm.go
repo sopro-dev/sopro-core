@@ -66,7 +66,6 @@ func linearPcm(in *sopro.In, out *sopro.Out, rs *Resampler) error {
 
 	// Update the file size and data size fields
 	fileFixer := out.Data.(*os.File)
-	defer fileFixer.Close()
 	r, err := fileFixer.Seek(0, io.SeekStart)
 	if err != nil {
 		return fmt.Errorf("error seeking file: %v", err)
@@ -97,5 +96,5 @@ func linearPcm(in *sopro.In, out *sopro.Out, rs *Resampler) error {
 		sopro.GraphOut(in, out)
 	}
 
-	return nil
+	return fileFixer.Close()
 }
