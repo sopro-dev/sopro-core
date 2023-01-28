@@ -17,40 +17,40 @@ func BandLimitedSincInterpolation[T int16 | int32 | int64 | int | byte](input []
 	if ratioIO <= 0 {
 		return input, errors.New("ratio must be positive")
 	}
-	//calculate the number of samples in the input slice
+	// calculate the number of samples in the input slice
 	inputSamples := len(input)
 
-	//calculate the number of samples in the output slice
+	// calculate the number of samples in the output slice
 	outputSamples := int(math.Ceil(float64(inputSamples) / ratioIO))
 
-	//allocate the output slice with the correct size
+	// allocate the output slice with the correct size
 	output := make([]T, outputSamples)
 
-	//resample the audio
+	// resample the audio
 	for i := 0; i < outputSamples; i++ {
-		//calculate the corresponding sample index in the input slice
+		// calculate the corresponding sample index in the input slice
 		inputIndex := float64(i) * ratioIO
-		//calculate the fractional part of the index
+		// calculate the fractional part of the index
 		alpha := inputIndex - math.Floor(inputIndex)
 		_ = alpha // TODO: use alpha
-		//initialize the sum
+		// initialize the sum
 		sum := 0.0
-		//apply the band-limited sinc interpolation
+		// apply the band-limited sinc interpolation
 		for j := -8; j <= 8; j++ {
-			//calculate the index of the sample in the input slice
+			// calculate the index of the sample in the input slice
 			sampleIndex := int(inputIndex) + j
-			//check if the index is in range
+			// check if the index is in range
 			if sampleIndex < 0 || sampleIndex >= inputSamples {
 				continue
 			}
-			//calculate the sinc function
+			// calculate the sinc function
 			// denom := alpha + float64(j)
 			// // sinc := utils.Sinc(denom)
 
 			// //multiply the sample value by the sinc function
 			// sum += float64(input[sampleIndex]) * sinc
 		}
-		//store the float value of the sum in the output slice
+		// store the float value of the sum in the output slice
 		output[i] = T(sum)
 	}
 	return output, nil

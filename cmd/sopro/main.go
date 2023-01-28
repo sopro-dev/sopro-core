@@ -17,7 +17,6 @@ import (
 const VERSION = "v0.1.3"
 
 func main() {
-
 	app := &cli.App{
 		Name:    "sopro",
 		Usage:   "High performance audio processing tool",
@@ -27,7 +26,6 @@ func main() {
 				Name:  "transcoder",
 				Usage: "Transcode audio files",
 				Flags: []cli.Flag{
-
 					&cli.IntFlag{
 						Name:     "method",
 						Usage:    "transcode method",
@@ -116,7 +114,6 @@ func main() {
 				},
 
 				Action: func(ctx *cli.Context) error {
-
 					fmt.Println("[Version]    ", ctx.App.Version)
 
 					methodT := ctx.Int("method")

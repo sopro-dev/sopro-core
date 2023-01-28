@@ -10,7 +10,6 @@ import (
 )
 
 func ResampleBytes(in *sopro.In, out *sopro.Out, rs *Resampler) (int, error) {
-
 	switch rs.MethodR {
 	case LINEAR_INTERPOLATION:
 		return linear_interpolation(in, out, rs)
