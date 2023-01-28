@@ -32,7 +32,6 @@ func GraphIn(in *In) error {
 	if err != nil {
 		return fmt.Errorf("error opening file: %v", err)
 	}
-	defer f.Close()
 
 	data, err := io.ReadAll(f)
 	if err != nil {
@@ -61,7 +60,7 @@ func GraphIn(in *In) error {
 		),
 	))
 
-	return nil
+	return f.Close()
 }
 
 // GraphOut graphs the output file to the terminal
@@ -76,7 +75,6 @@ func GraphOut(in *In, out *Out) error {
 	if err != nil {
 		return fmt.Errorf("error opening file: %v", err)
 	}
-	defer f.Close()
 	data, err := io.ReadAll(f)
 	if err != nil {
 		return fmt.Errorf("error reading file: %v", err)
@@ -91,7 +89,6 @@ func GraphOut(in *In, out *Out) error {
 	if err != nil {
 		return fmt.Errorf("error opening file: %v", err)
 	}
-	defer fOut.Close()
 	outData, err := io.ReadAll(fOut)
 	if err != nil {
 		return fmt.Errorf("error reading file: %v", err)
@@ -150,5 +147,6 @@ func GraphOut(in *In, out *Out) error {
 	))
 	fmt.Println("*First and last byte are not representative")
 
-	return nil
+	f.Close()
+	return fOut.Close()
 }
