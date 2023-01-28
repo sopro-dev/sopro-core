@@ -30,13 +30,15 @@ func GraphIn(in *In) {
 	// make an independent copy of the file
 	f, err := os.Open(in.Data.(*os.File).Name())
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Error opening file: %v", err)
+		return
 	}
 	defer f.Close()
 
 	data, err := io.ReadAll(f)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Error reading file: %v", err)
+		return
 	}
 
 	values := make([]float64, len(data))
@@ -74,12 +76,14 @@ func GraphOut(in *In, out *Out) {
 	defer file.Close()
 	f, err := os.Open(file.Name())
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Error opening file: %v", err)
+		return
 	}
 	defer f.Close()
 	data, err := io.ReadAll(f)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Error reading file: %v", err)
+		return
 	}
 	input := make([]float64, len(data)*2)
 	for i, val := range data {
@@ -89,12 +93,14 @@ func GraphOut(in *In, out *Out) {
 
 	fOut, err := os.Open(out.Data.(*os.File).Name())
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Error opening file: %v", err)
+		return
 	}
 	defer fOut.Close()
 	outData, err := io.ReadAll(fOut)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Error reading file: %v", err)
+		return
 	}
 	output := make([]float64, len(outData))
 	for i, val := range outData {
