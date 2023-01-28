@@ -28,6 +28,13 @@ Examples:
 Plugins:
 - Connectivity to python neural network inference api with grpc/http and caching the inference
 
+## Example (WIP)
+
+Trascoding a file from ulaw to wav pcm with CLI
+
+[![asciicast](https://asciinema.org/a/IXy7MLb1qyXDCCU7IUsrdVkmA.svg)](https://asciinema.org/a/IXy7MLb1qyXDCCU7IUsrdVkmA)
+
+
 ## Installation
 
 ```bash
