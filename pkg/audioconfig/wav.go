@@ -6,21 +6,30 @@ import (
 	"strings"
 )
 
+// WavConfig is a struct that contains the configuration of a WAV audio file.
 type WavConfig struct {
-	SampleRate int // the sample rate in Hertz
-	BitDepth   int // the bit depth (e.g. 8, 16, 24)
-	Channels   int // the number of channels (e.g. 1, 2)
-	Encoding   int // the encoding format (e.g. "PCM", "IEEE_FLOAT")
+	BitDepth   int   // the bit depth (e.g. 8, 16, 24)
+	Channels   int   // the number of channels (e.g. 1, 2)
+	Encoding   int   // the encoding format (e.g. "PCM", "IEEE_FLOAT")
+	SampleRate int   // the sample rate in Hertz
+	WaveFormat uint8 // the wave format (e.g. "PCM", "IEEE_FLOAT", "ALAW", "MULAW")
 }
 
-// https://www-mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/WAVE.html
+// Audio formats Wav RIFF (4 bytes)
+// Documentation: https://www-mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/WAVE.html
 const (
-	WAVE_FORMAT_PCM        = 0x0001
+	// Audio Format WAV RIFF: PCM (4 bytes)
+	WAVE_FORMAT_PCM = 0x0001
+	// Audio Format WAV RIFF: IEEE Float (4 bytes)
 	WAVE_FORMAT_IEEE_FLOAT = 0x0003
-	WAVE_FORMAT_ALAW       = 0x0006
-	WAVE_FORMAT_MULAW      = 0x0007
+	// Audio Format WAV RIFF: ALAW (4 bytes)
+	WAVE_FORMAT_ALAW = 0x0006
+	// Audio Format WAV RIFF: MULAW (4 bytes)
+	WAVE_FORMAT_MULAW = 0x0007
 )
 
+// PrintWavHeaders prints the headers of a WAV file
+// first 44 bytes of a WAV file
 func PrintWavHeaders(headersWav []byte) {
 	if len(headersWav) != 44 {
 		log.Println("[ERROR] Headers are not 44 bytes long")

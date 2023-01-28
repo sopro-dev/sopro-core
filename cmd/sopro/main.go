@@ -9,6 +9,7 @@ import (
 	"github.com/pablodz/sopro/pkg/cpuarch"
 	"github.com/pablodz/sopro/pkg/encoding"
 	"github.com/pablodz/sopro/pkg/fileformat"
+	"github.com/pablodz/sopro/pkg/sopro"
 	"github.com/pablodz/sopro/pkg/transcoder"
 	"github.com/urfave/cli/v2"
 )
@@ -16,7 +17,6 @@ import (
 const VERSION = "v0.1.3"
 
 func main() {
-
 	app := &cli.App{
 		Name:    "sopro",
 		Usage:   "High performance audio processing tool",
@@ -26,7 +26,6 @@ func main() {
 				Name:  "transcoder",
 				Usage: "Transcode audio files",
 				Flags: []cli.Flag{
-
 					&cli.IntFlag{
 						Name:     "method",
 						Usage:    "transcode method",
@@ -115,7 +114,6 @@ func main() {
 				},
 
 				Action: func(ctx *cli.Context) error {
-
 					fmt.Println("[Version]    ", ctx.App.Version)
 
 					methodT := ctx.Int("method")
@@ -213,10 +211,10 @@ func main() {
 					// create a transcoder
 					t := &transcoder.Transcoder{
 						MethodT: methodT, // method.BIT_LOOKUP_TABLE=1
-						SourceConfigs: transcoder.TranscoderAudioConfig{
+						InConfigs: sopro.AudioConfig{
 							Endianness: cpuarch.LITTLE_ENDIAN,
 						},
-						TargetConfigs: transcoder.TranscoderAudioConfig{
+						OutConfigs: sopro.AudioConfig{
 							Endianness: cpuarch.LITTLE_ENDIAN,
 						},
 						SizeBuffer: buffer,
@@ -225,9 +223,9 @@ func main() {
 
 					// Transcode the file
 					err = t.Mulaw2Wav(
-						&transcoder.AudioFileIn{
+						&sopro.In{
 							Data: in,
-							AudioFileGeneral: transcoder.AudioFileGeneral{
+							AudioFileGeneral: sopro.AudioFileGeneral{
 								Format: fileformat.AUDIO_MULAW,
 								Config: audioconfig.MulawConfig{
 									BitDepth:   inputBits,
@@ -237,9 +235,9 @@ func main() {
 								},
 							},
 						},
-						&transcoder.AudioFileOut{
+						&sopro.Out{
 							Data: out,
-							AudioFileGeneral: transcoder.AudioFileGeneral{
+							AudioFileGeneral: sopro.AudioFileGeneral{
 								Format: fileformat.AUDIO_WAV,
 								Config: audioconfig.WavConfig{
 									BitDepth:   outputBits,

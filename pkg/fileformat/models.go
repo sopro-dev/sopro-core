@@ -1,6 +1,6 @@
 package fileformat
 
-// List from https://en.wikipedia.org/wiki/Audio_file_format
+// SupportedAudioFormats is a list of supported audio formats
 var SUPPORTED_AUDIO_FORMATS = []string{
 	// Add here the supported audio formats
 	AUDIO_3GP,
@@ -51,6 +51,7 @@ var SUPPORTED_AUDIO_FORMATS = []string{
 	AUDIO_VORBIS,
 }
 
+// Audio formats
 const (
 	AUDIO_3GP   = "3gp"
 	AUDIO_AA    = "aa"
