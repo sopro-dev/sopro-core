@@ -12,10 +12,7 @@ const (
 	LINEAR_INTERPOLATION                    // Linear interpolation
 	POLYNOMIAL_INTERPOLATION                // Polynomial interpolation
 	BAND_LIMITED_INTERPOLATION              // Band limited interpolation
-<<<<<<< HEAD
 	FRACTIONAL_DELAY_FILTER
-=======
->>>>>>> d598982 (refactor, new resampler, new transcoder, sopro models, sinc interpolation and more examples)
 )
 
 // RESAMPLER_METHODS is a map of resampler methods
