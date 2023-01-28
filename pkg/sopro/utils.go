@@ -28,8 +28,7 @@ func GraphIn(in *In) {
 	}
 
 	// make an independent copy of the file
-	file := in.Data.(*os.File)
-	f, err := os.Open(file.Name())
+	f, err := os.Open(in.Data.(*os.File).Name())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -72,6 +71,7 @@ func GraphOut(in *In, out *Out) {
 		return
 	}
 	file := in.Data.(*os.File)
+	defer file.Close()
 	f, err := os.Open(file.Name())
 	if err != nil {
 		log.Fatal(err)
@@ -87,8 +87,7 @@ func GraphOut(in *In, out *Out) {
 		input[i*2+1] = float64(val)
 	}
 
-	outFile := out.Data.(*os.File)
-	fOut, err := os.Open(outFile.Name())
+	fOut, err := os.Open(out.Data.(*os.File).Name())
 	if err != nil {
 		log.Fatal(err)
 	}

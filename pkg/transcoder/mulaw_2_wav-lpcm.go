@@ -70,6 +70,7 @@ func mulaw2WavLpcm(in *sopro.In, out *sopro.Out, tr *Transcoder) (err error) {
 
 	// Update the file size and data size fields
 	fileFixer := out.Data.(*os.File)
+	defer fileFixer.Close()
 	r, err := fileFixer.Seek(0, io.SeekStart)
 	if err != nil {
 		return fmt.Errorf("error seeking file: %v", err)
