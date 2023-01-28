@@ -19,24 +19,23 @@ var (
 )
 
 // GraphIn graphs the input file to the terminal
-func GraphIn(in *In) {
+func GraphIn(in *In) error {
 	log.Println("[WARNING] Reading the whole file into memory. This may take a while...")
 	// check if in is *bytes.Buffer
 	if _, ok := in.Data.(*bytes.Buffer); ok {
 		log.Println("Input file is a bytes.Buffer")
-		return
+		return nil
 	}
 
 	// make an independent copy of the file
 	f, err := os.Open(in.Data.(*os.File).Name())
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("error opening file: %v", err)
 	}
-	defer f.Close()
 
 	data, err := io.ReadAll(f)
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("error reading file: %v", err)
 	}
 
 	values := make([]float64, len(data))
@@ -60,26 +59,25 @@ func GraphIn(in *In) {
 			asciigraph.Red,
 		),
 	))
+
+	return f.Close()
 }
 
 // GraphOut graphs the output file to the terminal
-func GraphOut(in *In, out *Out) {
+func GraphOut(in *In, out *Out) error {
 	log.Println("[WARNING] Reading the whole file into memory. This may take a while...")
 	// check if in is *bytes.Buffer
 	if _, ok := in.Data.(*bytes.Buffer); ok {
 		log.Println("Input file is a bytes.Buffer")
-		return
+		return nil
 	}
-	file := in.Data.(*os.File)
-	defer file.Close()
-	f, err := os.Open(file.Name())
+	f, err := os.Open(in.Data.(*os.File).Name())
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("error opening file: %v", err)
 	}
-	defer f.Close()
 	data, err := io.ReadAll(f)
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("error reading file: %v", err)
 	}
 	input := make([]float64, len(data)*2)
 	for i, val := range data {
@@ -89,12 +87,11 @@ func GraphOut(in *In, out *Out) {
 
 	fOut, err := os.Open(out.Data.(*os.File).Name())
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("error opening file: %v", err)
 	}
-	defer fOut.Close()
 	outData, err := io.ReadAll(fOut)
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("error reading file: %v", err)
 	}
 	output := make([]float64, len(outData))
 	for i, val := range outData {
@@ -149,4 +146,7 @@ func GraphOut(in *In, out *Out) {
 		),
 	))
 	fmt.Println("*First and last byte are not representative")
+
+	f.Close()
+	return fOut.Close()
 }
