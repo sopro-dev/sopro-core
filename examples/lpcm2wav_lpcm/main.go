@@ -15,7 +15,6 @@ import (
 )
 
 func main() {
-
 	// generate sin wave in slice of bytes
 	data := []byte{}
 	for i := 0; i < 10000; i++ {
