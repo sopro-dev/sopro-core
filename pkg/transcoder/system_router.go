@@ -33,3 +33,24 @@ func (t *Transcoder) Mulaw2Wav(in *sopro.In, out *sopro.Out) error {
 
 	}
 }
+
+func (t *Transcoder) Pcm2Wav(in *sopro.In, out *sopro.Out) error {
+	inSpace := in.Config.(audioconfig.PcmConfig).Encoding
+	outSpace := out.Config.(audioconfig.WavConfig).Encoding
+
+	switch {
+	case t.MethodT == method.NOT_FILLED &&
+		inSpace == encoding.SPACE_LINEAR &&
+		outSpace == encoding.SPACE_LINEAR:
+		return lpcm2WavLpcm(in, out, t)
+	default:
+		return fmt.Errorf(
+			"[%s] %s: %s -> %s",
+			method.METHODS[t.MethodT],
+			sopro.ErrUnsupportedTranscoding,
+			encoding.ENCODINGS[inSpace],
+			encoding.ENCODINGS[outSpace],
+		)
+
+	}
+}
