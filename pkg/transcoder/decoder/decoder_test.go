@@ -28,7 +28,7 @@ func TestDecodeUlaw2Lpcm(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		lpcm, err := DecodeFrameUlaw2Lpcm(tt.logPcm)
+		lpcm, err := DecodeULawToPCM(tt.logPcm)
 		if (err != nil) != tt.wantErr {
 			t.Errorf("unexpected error: %v", err)
 			continue

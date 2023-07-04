@@ -72,7 +72,7 @@ func differentSpaceEncoding(in *sopro.In, out *sopro.Out, transcoder *Transcoder
 		}
 		bufIn = bufIn[:n]
 		// buf2 is different size than buf
-		bufOut, _ = decoder.DecodeFrameUlaw2Lpcm(bufIn) // IMPORTANT:buf cut to n bytes
+		bufOut, _ = decoder.DecodeULawToPCM(bufIn) // IMPORTANT:buf cut to n bytes
 		out.Length += len(bufOut)
 		if _, err = out.Writer.Write(bufOut); err != nil {
 			return nTotal, fmt.Errorf("error writing output file: %v", err)
