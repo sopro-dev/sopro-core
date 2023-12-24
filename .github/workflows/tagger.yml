@@ -2,7 +2,7 @@ name: tagger
 on:
   push:
     branches:
-      - "*"
+      - "main"
 
 jobs:
   tagger:
