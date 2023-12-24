@@ -6,4 +6,4 @@ test_patterns = ["**/*_test.go"]
 name = "go"
 
   [analyzers.meta]
-  import_root = "github.com/pablodz/sopro"
+  import_root = "github.com/sopro-dev/sopro-core"

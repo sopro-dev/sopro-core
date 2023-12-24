@@ -1,4 +1,4 @@
-[![Go Report Card](https://goreportcard.com/badge/github.com/pablodz/sopro)](https://goreportcard.com/report/github.com/pablodz/sopro)
+[![Go Report Card](https://goreportcard.com/badge/github.com/sopro-dev/sopro-core)](https://goreportcard.com/report/github.com/sopro-dev/sopro-core)
 
 # SoPro (next generation SOund PROcessing)
 
@@ -38,7 +38,7 @@ Trascoding a file from ulaw to wav pcm with CLI
 ## Installation
 
 ```bash
-go get -v github.com/pablodz/sopro
+go get -v github.com/sopro-dev/sopro-core
 ```
 
 ## Contribution
@@ -165,11 +165,6 @@ Check [./examples](./examples/) folder
   - [ ] spectrogram: graph signal level vs. frequency & time
   - [ ] stat: Enumerate audio peak & RMS levels, approx. freq., etc.
   - [ ] stats: Multichannel aware `stat'
-
-
-## Authors
-
-All authors that contributed to this project are listed in the [AUTHORS](AUTHORS) file.
 
 ## License
 
