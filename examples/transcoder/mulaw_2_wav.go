@@ -2,7 +2,6 @@ package main
 
 import (
 	"io"
-	"log"
 	"os"
 
 	"github.com/sopro-dev/sopro-core/audio"
@@ -30,6 +29,7 @@ func main() {
 		Channels:    1,
 		BitDepth:    8,
 		FloatFormat: false,
+		Verbose:     false,
 	}
 
 	transcoder := audio.NewTranscoder(&mulaw.MuLawFormat{}, &pcm.PCMFormat{})
@@ -52,21 +52,10 @@ func main() {
 		Channels:   1,
 		SampleRate: 8000,
 		BitDepth:   16,
-		Verbose:    true,
+		Verbose:    audioInfo.Verbose,
 	})
 
 	f.Write(headers)
 	f.Seek(44, 0)
 	f.Write(outputData)
-
-	f.Seek(0, 0)
-	// print first 100 bytes of the output file
-	out, err := io.ReadAll(f)
-	if err != nil {
-		panic(err)
-	}
-
-	// get data from :100
-	log.Println("[Bytes][out]", out[0:100])
-
 }

@@ -1,7 +1,7 @@
 package utils
 
-// ulawDecode is a lookup table for u-law to LPCM
-var ulawDecode = [256]int16{
+// mulawToPcmTable is a lookup table for converting u-law to 16bit LPCM
+var mulawToPcmTable = [256]int16{
 	-32124, -31100, -30076, -29052, -28028, -27004, -25980, -24956,
 	-23932, -22908, -21884, -20860, -19836, -18812, -17788, -16764,
 	-15996, -15484, -14972, -14460, -13948, -13436, -12924, -12412,

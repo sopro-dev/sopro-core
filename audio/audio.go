@@ -5,9 +5,10 @@ type AudioInfo struct {
 	Channels    int
 	BitDepth    int
 	FloatFormat bool
+	Verbose     bool
 }
 
 type AudioFormat interface {
-	Decode(data []byte, info AudioInfo) []float64
-	Encode(audioData []float64, info AudioInfo) []byte
+	Decode(data []byte, info AudioInfo) []byte
+	Encode(audioData []byte, info AudioInfo) []byte
 }

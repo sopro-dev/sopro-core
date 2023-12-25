@@ -9,13 +9,12 @@ import (
 
 type PCMFormat struct{}
 
-func (f *PCMFormat) Decode(data []byte, info audio.AudioInfo) []float64 {
+func (f *PCMFormat) Decode(data []byte, info audio.AudioInfo) []byte {
 	log.Printf("Not implemented")
 	return nil
 }
 
-func (f *PCMFormat) Encode(audioData []float64, info audio.AudioInfo) []byte {
-
+func (f *PCMFormat) Encode(audioData []byte, info audio.AudioInfo) []byte {
 	// convert float64 to byte
 	data := make([]byte, len(audioData))
 	for i := 0; i < len(audioData); i++ {

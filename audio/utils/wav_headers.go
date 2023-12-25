@@ -3,6 +3,8 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
+	"log"
+	"strings"
 	"sync"
 )
 
@@ -36,28 +38,28 @@ type WaveFormat uint16
 
 // WAV FORMAT CODES
 const (
-	WAVE_FORMAT_UNKNOWN            = 0x0000 // Microsoft Unknown Wave Format
-	WAVE_FORMAT_PCM                = 0x0001 // Microsoft PCM Format
-	WAVE_FORMAT_ADPCM              = 0x0002 // Microsoft ADPCM Format
-	WAVE_FORMAT_IEEE_FLOAT         = 0x0003 // IEEE float
-	WAVE_FORMAT_VSELP              = 0x0004 // Compaq Computer's VSELP
-	WAVE_FORMAT_IBM_CVSD           = 0x0005 // IBM CVSD
-	WAVE_FORMAT_ALAW               = 0x0006 // ALAW
-	WAVE_FORMAT_MULAW              = 0x0007 // MULAW
-	WAVE_FORMAT_DTS                = 0x0008 // Digital Theater Systems DTS
-	WAVE_FORMAT_DRM                = 0x0009 // Microsoft Corporation
-	WAVE_FORMAT_WMAVOICE9          = 0x000A // Microsoft Corporation
-	WAVE_FORMAT_WMAVOICE10         = 0x000B // Microsoft Corporation
-	WAVE_FORMAT_OKI_ADPCM          = 0x0010 // OKI ADPCM
-	WAVE_FORMAT_DVI_ADPCM          = 0x0011 // Intel's DVI ADPCM
-	WAVE_FORMAT_IMA_ADPCM          = WAVE_FORMAT_DVI_ADPCM
-	WAVE_FORMAT_MEDIASPACE_ADPCM   = 0x0012 // Videologic's MediaSpace ADPCM
-	WAVE_FORMAT_SIERRA_ADPCM       = 0x0013 // Sierra ADPCM
-	WAVE_FORMAT_G723_ADPCM         = 0x0014 // G.723 ADPCM
-	WAVE_FORMAT_DIGISTD            = 0x0015 // DSP Solution's DIGISTD
-	WAVE_FORMAT_DIGIFIX            = 0x0016 // DSP Solution's DIGIFIX
-	WAVE_FORMAT_DIALOGIC_OKI_ADPCM = 0x0017 // Dialogic Corporation
-	WAVE_FORMAT_MEDIAVISION_ADPCM  = 0x0018 // Media Vision ADPCM
+	WAVE_FORMAT_UNKNOWN            = 0x0000                // Microsoft Unknown Wave Format
+	WAVE_FORMAT_PCM                = 0x0001                // Microsoft PCM Format
+	WAVE_FORMAT_ADPCM              = 0x0002                // Microsoft ADPCM Format
+	WAVE_FORMAT_IEEE_FLOAT         = 0x0003                // IEEE float
+	WAVE_FORMAT_VSELP              = 0x0004                // Compaq Computer's VSELP
+	WAVE_FORMAT_IBM_CVSD           = 0x0005                // IBM CVSD
+	WAVE_FORMAT_ALAW               = 0x0006                // ALAW
+	WAVE_FORMAT_MULAW              = 0x0007                // MULAW
+	WAVE_FORMAT_DTS                = 0x0008                // Digital Theater Systems DTS
+	WAVE_FORMAT_DRM                = 0x0009                // Microsoft Corporation
+	WAVE_FORMAT_WMAVOICE9          = 0x000A                // Microsoft Corporation
+	WAVE_FORMAT_WMAVOICE10         = 0x000B                // Microsoft Corporation
+	WAVE_FORMAT_OKI_ADPCM          = 0x0010                // OKI ADPCM
+	WAVE_FORMAT_DVI_ADPCM          = 0x0011                // Intel's DVI ADPCM
+	WAVE_FORMAT_IMA_ADPCM          = WAVE_FORMAT_DVI_ADPCM // Intel's DVI ADPCM
+	WAVE_FORMAT_MEDIASPACE_ADPCM   = 0x0012                // Videologic's MediaSpace ADPCM
+	WAVE_FORMAT_SIERRA_ADPCM       = 0x0013                // Sierra ADPCM
+	WAVE_FORMAT_G723_ADPCM         = 0x0014                // G.723 ADPCM
+	WAVE_FORMAT_DIGISTD            = 0x0015                // DSP Solution's DIGISTD
+	WAVE_FORMAT_DIGIFIX            = 0x0016                // DSP Solution's DIGIFIX
+	WAVE_FORMAT_DIALOGIC_OKI_ADPCM = 0x0017                // Dialogic Corporation
+	WAVE_FORMAT_MEDIAVISION_ADPCM  = 0x0018                // Media Vision ADPCM
 )
 
 // GenerateWavHeadersWithConfig generates the headers for a WAV file without the size fields
@@ -69,6 +71,7 @@ func GenerateWavHeadersWithConfig(head *WavHeader) []byte {
 
 	totalLength := head.Length - 8
 	if totalLength < 0 {
+		log.Printf("WARNING: Length is less than 8, defaulting to 0\n")
 		totalLength = 0
 	}
 
@@ -133,4 +136,35 @@ func GenerateWavHeadersWithConfig(head *WavHeader) []byte {
 		subChunk2ID,
 		IntToBytes(subChunk2Size),
 	)
+}
+
+// PrintWavHeaders prints the headers of a WAV file
+// first 44 bytes of a WAV file
+func PrintWavHeaders(headersWav []byte) {
+	if len(headersWav) != 44 {
+		log.Println("[ERROR] Headers are not 44 bytes long")
+		return
+	}
+	fmt.Println("Headers (WAV):")
+	comments := []string{
+		"(4) Chunk ID [RIFF]",
+		"(4) Chunk size",
+		"(4) Format [WAVE]",
+		"(4) Sub-chunk 1 ID [fmt ]",
+		"(4) Sub-chunk 1 size",
+		"(2) Audio format (PCM) & (2) Number of channels",
+		"(4) Sample rate",
+		"(4) Byte rate",
+		"(2) Block align & (2) Bits per sample",
+		"(4) Sub-chunk 2 ID [data]",
+		"(4) Sub-chunk 2 size",
+	}
+	for i := 0; i < 44; i += 4 {
+		fmt.Println(
+			fmt.Sprintf("[%2d,%2d]", i, i+4),
+			fmt.Sprintf("% 2x", headersWav[i:i+4]),
+			"\t<"+strings.ToUpper(string(headersWav[i:i+4]))+">\t",
+			comments[i/4],
+		)
+	}
 }
