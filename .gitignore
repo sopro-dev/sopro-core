@@ -14,3 +14,56 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 executable
+
+## All files with audio format
+# Ignore standart audio files
+*.3gp
+*.aa
+*.aac
+*.aax
+*.act
+*.aiff
+*.alac
+*.amr
+*.ape
+*.au
+*.awb
+*.dss
+*.flac
+*.gsm
+*.m4a
+*.m4b
+*.m4p
+*.mp3
+*.mpc
+*.ogg
+*.oga
+*.mogg
+*.ulaw
+*.opus
+*.pcm
+*.ra
+*.rm
+*.raw
+*.rf64
+*.sln
+*.tta
+*.voc
+*.vox
+*.wav
+*.wma
+*.webm
+*.8svx
+*.cda
+# Ignore raw audio files
+*.raw
+*.wv
+*.mid
+*.midi
+*.mod
+*.mpa
+*.mp1
+*.mp2
+*.mp3
+*.ul
+*.al

@@ -1,4 +1,4 @@
-[![Go Report Card](https://goreportcard.com/badge/github.com/pablodz/sopro)](https://goreportcard.com/report/github.com/pablodz/sopro)
+[![Go Report Card](https://goreportcard.com/badge/github.com/sopro-dev/sopro-core)](https://goreportcard.com/report/github.com/sopro-dev/sopro-core)
 
 # SoPro (next generation SOund PROcessing)
 
@@ -28,17 +28,15 @@ Examples:
 Plugins:
 - Connectivity to python neural network inference api with grpc/http and caching the inference
 
-## Example (WIP)
+## Warning
 
-Trascoding a file from ulaw to wav pcm with CLI
-
-[![asciicast](https://asciinema.org/a/IXy7MLb1qyXDCCU7IUsrdVkmA.svg)](https://asciinema.org/a/IXy7MLb1qyXDCCU7IUsrdVkmA)
-
+- HTTP & gRPC Server and cli are on new roadmap
+ 
 
 ## Installation
 
 ```bash
-go get -v github.com/pablodz/sopro
+go get -v github.com/sopro-dev/sopro-core
 ```
 
 ## Contribution
@@ -65,7 +63,7 @@ Check [./examples](./examples/) folder
   - [ ] Websocket
   - [ ] gRPC
 - [x] Audio file conversion
-  - [ ] Format conversion [Work in progress...](docs/format_table.md)
+  - [ ] Format conversion (Work in progress...)
   - [ ] Bitrate conversion
   - [ ] Channels conversion
   - [ ] Resampling
@@ -160,16 +158,11 @@ Check [./examples](./examples/) folder
   - [ ] Two channel mixer
   - [ ] Multi channel mixer
 - [ ] Debugger
-  - [x] Audio ascii graph in terminal
-  - [x] Headers viewer in terminal
+  - [ ] Audio ascii graph in terminal
+  - [ ] Headers viewer in terminal
   - [ ] spectrogram: graph signal level vs. frequency & time
   - [ ] stat: Enumerate audio peak & RMS levels, approx. freq., etc.
   - [ ] stats: Multichannel aware `stat'
-
-
-## Authors
-
-All authors that contributed to this project are listed in the [AUTHORS](AUTHORS) file.
 
 ## License
 
