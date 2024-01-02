@@ -19,7 +19,7 @@ jobs:
           MAX_BRANCH_LENGTH=40
           FIXED_BRANCH=$(echo ${GITHUB_REF:11:${MAX_BRANCH_LENGTH}} | sed 's/[^[:alnum:]]/-/g')
           NEW_TAG=$(echo "$VERSION_VALUE-${FIXED_BRANCH}.$(date +%Y%m%d-%H%M%S)")
-          echo "$NEW_TAG" >> $GITHUB_ENV
+          echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
 
       - name: Push tag
         run: |
