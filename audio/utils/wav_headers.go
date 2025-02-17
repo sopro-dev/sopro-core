@@ -70,15 +70,7 @@ func GenerateWavHeadersWithConfig(head *WavHeader) []byte {
 	}
 
 	totalLength := head.Length - 8
-	if totalLength < 0 {
-		log.Printf("WARNING: Length is less than 8, defaulting to 0\n")
-		totalLength = 0
-	}
-
 	subChunk2Size := head.Length - 44
-	if subChunk2Size < 0 {
-		subChunk2Size = 0
-	}
 
 	chunkID := []byte{'R', 'I', 'F', 'F'}
 	format := []byte{'W', 'A', 'V', 'E'}
